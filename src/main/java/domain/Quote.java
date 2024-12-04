@@ -8,12 +8,12 @@ import jakarta.persistence.ManyToOne;
 public class Quote {
 
 	 	@Id
-	    private Long id;  // ID of the quote
+	    private Long id;  
 	    @ManyToOne
-	    private Client client;  // Customer for whom the quote was generated
+	    private Client client;  
 	    @ManyToOne
-	    private Insurance insurance;  // Type of insurance for the quote
-	    private Double quotedPrice;  // Price of the generated quote
+	    private Insurance insurance;  
+	    private Double quotedPrice;  
 	    
 	    // Getters and Setters
 	    public Long getId() {

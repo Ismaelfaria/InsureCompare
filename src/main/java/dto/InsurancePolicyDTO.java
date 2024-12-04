@@ -4,8 +4,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public record InsurancePolicyDTO( 
-		Long id, 
-
 	    @NotNull(message = "Customer ID cannot be null")
 	    Long customerId, 
 

@@ -5,8 +5,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
 public record ClientDTO(
-		Long id, 
-
 	    @NotNull(message = "Name cannot be null")
 	    @Size(min = 1, message = "Name cannot be empty")
 	    String name, 
