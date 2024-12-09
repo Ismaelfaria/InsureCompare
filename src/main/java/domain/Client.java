@@ -1,5 +1,6 @@
 package domain;
 
+import dto.ClientDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 

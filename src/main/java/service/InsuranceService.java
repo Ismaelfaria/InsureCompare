@@ -6,7 +6,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import Mappers.InsuranceMapper;
 import domain.Insurance;
+import dto.InsuranceDTO;
 import jakarta.persistence.EntityNotFoundException;
 import repository.InsuranceRepository;
 
@@ -15,21 +17,31 @@ public class InsuranceService {
 
 	@Autowired
 	private InsuranceRepository insuranceRepository;
+	
+	@Autowired
+	private InsuranceMapper insuranceMapper;
 
-    public List<Insurance> getAllInsurancesOrderedByPrice() {
-        return insuranceRepository.findAllSortedByPrecoBaseAsc();
+    public List<InsuranceDTO> getAllInsurancesOrderedByPrice() {
+        List<Insurance> allInsurance = insuranceRepository.findAllSortedByPrecoBaseAsc();
+        
+        return allInsurance
+        		.stream()
+        		.map(insuranceMapper::toDTO)
+        		.toList();
     }
 
-    public Insurance getInsuranceById(Long id) {
+    public InsuranceDTO getInsuranceById(Long id) {
         return insuranceRepository.findById(id)
+        		.map(insuranceMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Insurance not found with id: " + id));
     }
 
-    public Insurance saveInsurance(Insurance insurance) {
+    public Insurance saveInsurance(InsuranceDTO insuranceDTO) {
+    	Insurance insurance = insuranceMapper.toEntity(insuranceDTO);
         return insuranceRepository.save(insurance);
     }
     
-    public Insurance updateInsurance(Long id, Map<String, Object> updateRequest) {
+    public InsuranceDTO updateInsurance(Long id, Map<String, Object> updateRequest) {
     	
         Insurance existingInsurance = insuranceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Insurance not found with id: " + id));
@@ -46,7 +58,8 @@ public class InsuranceService {
                     throw new IllegalArgumentException("Invalid field to update: " + field);
             }
         });
-        return insuranceRepository.save(existingInsurance);
+        Insurance insuranceUpdate = insuranceRepository.save(existingInsurance);
+        return insuranceMapper.toDTO(insuranceUpdate);
     }
 
 

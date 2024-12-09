@@ -7,7 +7,4 @@ import domain.Client;
 import domain.Quote;
 
 @Repository
-public interface QuoteRepository extends JpaRepository<Quote, Long>{
-	
-	List<Quote> findByClient(Client customer);
-}
+public interface QuoteRepository extends JpaRepository<Quote, Long>{}

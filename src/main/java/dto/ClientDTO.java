@@ -4,14 +4,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
+import domain.Client;
+
 public record ClientDTO(
-	    @NotNull(message = "Name cannot be null")
-	    @Size(min = 1, message = "Name cannot be empty")
-	    String name, 
+		@NotNull(message = "Name cannot be null") @Size(min = 1, message = "Name cannot be empty") String name,
 
-	    @NotNull(message = "Email cannot be null")
-	    @Email(message = "Email should be valid")
-	    String email, 
+		@NotNull(message = "Email cannot be null") @Email(message = "Email should be valid") String email,
 
-	    String phone, 
-	    String address) {}
+		String phone, String address) {}

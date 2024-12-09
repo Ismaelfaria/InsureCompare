@@ -7,9 +7,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import Mappers.InsurancePolicyMapper;
 import domain.Client;
 import domain.Insurance;
 import domain.InsurancePolicy;
+import dto.InsurancePolicyDTO;
 import jakarta.persistence.EntityNotFoundException;
 import repository.InsurancePolicyRepository;
 
@@ -18,25 +20,40 @@ public class InsurancePolicyService {
 
 	@Autowired
 	private InsurancePolicyRepository insurancePolicyRepository;
+	
+	@Autowired
+	private InsurancePolicyMapper insurancePolicyMapper;
 
-    public List<InsurancePolicy> getPoliciesByClientAndStatus(Client client, String status) {
-        return insurancePolicyRepository.findByCustomerAndStatus(client, status);
+
+    public List<InsurancePolicyDTO> findPoliciesByClientAndStatus(Client client, String status) {
+        return insurancePolicyRepository.findByCustomerAndStatus(client, status)
+        		.stream()
+        		.map(insurancePolicyMapper::toDTO)
+        		.toList();
     }
 
-    public Optional<InsurancePolicy> findInsurancePolicyById(Long id) {
-        return insurancePolicyRepository.findById(id);
+    public Optional<InsurancePolicyDTO> findInsurancePolicyById(Long id) {
+        return insurancePolicyRepository.findById(id)
+        		.map(insurancePolicyMapper::toDTO);
     }
     
-    public List<InsurancePolicy> findAllInsurancePolicy(Long id) {
-        List<InsurancePolicy> allInsurancePolicy =  insurancePolicyRepository.findAll();
+    public List<InsurancePolicyDTO> findAllInsurancePolicy(Long id) {
+        List<InsurancePolicyDTO> allInsurancePolicy =  insurancePolicyRepository.findAll()
+        		.stream()
+        		.map(insurancePolicyMapper::toDTO)
+        		.toList();
+        
         return allInsurancePolicy;
     }
     
-    public InsurancePolicy savePolicy(InsurancePolicy policy) {
-        return insurancePolicyRepository.save(policy);
+    public InsurancePolicy savePolicy(InsurancePolicyDTO policyDTO) {
+    	
+    	InsurancePolicy insurancePolicy = insurancePolicyMapper.toEntity(policyDTO);
+    	
+        return insurancePolicyRepository.save(insurancePolicy);
     }
     
-    public InsurancePolicy updateInsurancePolicy(Long id, Map<String, Object> updateRequest) {
+    public InsurancePolicyDTO updateInsurancePolicy(Long id, Map<String, Object> updateRequest) {
 
 		InsurancePolicy existingPolicy = insurancePolicyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Insurance policy not found with id: " + id));
@@ -59,8 +76,10 @@ public class InsurancePolicyService {
                     throw new IllegalArgumentException("Invalid field to update: " + field);
             }
         });
-
-        return insurancePolicyRepository.save(existingPolicy);
+        
+        InsurancePolicy insurancePolicyUpdate = insurancePolicyRepository.save(existingPolicy);
+        
+        return insurancePolicyMapper.toDTO(insurancePolicyUpdate);
         }
 
     public void deletePolicyById(Long id) {

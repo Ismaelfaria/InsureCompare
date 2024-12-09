@@ -5,9 +5,13 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import Mappers.ClientMapper;
+import Mappers.QuoteMapper;
 import domain.Client;
 import domain.Insurance;
 import domain.Quote;
+import dto.QuoteDTO;
 import jakarta.persistence.EntityNotFoundException;
 import repository.ClientRepository;
 import repository.InsuranceRepository;
@@ -24,16 +28,18 @@ public class QuoteService {
 		
 		@Autowired
 	 	private InsuranceRepository insuranceRepository;
-
-	    public List<Quote> getQuotesByClient(Client client) {
-	        return quoteRepository.findByClient(client);
-	    }
-
-	    public Quote saveQuote(Quote quote) {
+		
+		@Autowired
+		private QuoteMapper quoteMapper;
+		
+	    public Quote saveQuote(QuoteDTO quoteDTO) {
+	    	
+	    	Quote quote = quoteMapper.toEntity(quoteDTO);
+	    	
 	        return quoteRepository.save(quote);
 	    }
 
-	    public Quote updateQuote(Long id, Map<String, Object> updateRequest) {
+	    public QuoteDTO updateQuote(Long id, Map<String, Object> updateRequest) {
 	        Quote existingQuote = quoteRepository.findById(id)
 	                .orElseThrow(() -> new EntityNotFoundException("Quote not found with id: " + id));
 
@@ -57,7 +63,8 @@ public class QuoteService {
 	            }
 	        });
 
-	        return quoteRepository.save(existingQuote);
+	        Quote quoteUpdate = quoteRepository.save(existingQuote);
+	        return quoteMapper.toDTO(quoteUpdate);
 	    }
 	    
 	    public void deleteQuoteById(Long id) {
@@ -67,7 +74,10 @@ public class QuoteService {
 	        quoteRepository.deleteById(id);
 	    }
 
-	    public List<Quote> getAllQuotes() {
-	        return quoteRepository.findAll();
+	    public List<QuoteDTO> getAllQuotes() {
+	        return quoteRepository.findAll()
+	        		.stream()
+	        		.map(quoteMapper::toDTO)
+	        		.toList();
 	    }
 }

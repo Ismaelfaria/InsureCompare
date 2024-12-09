@@ -5,7 +5,10 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import Mappers.ClientMapper;
 import domain.Client;
+import dto.ClientDTO;
 import jakarta.persistence.EntityNotFoundException;
 import repository.ClientRepository;
 import org.springframework.data.domain.Page;
@@ -16,21 +19,28 @@ public class ClientService {
 
 	@Autowired
     private ClientRepository clientRepository;
+	
+	@Autowired
+    private ClientMapper clientMapper;
 
-    public Client saveClient(Client client) {
+    public Client saveClient(ClientDTO clientDTO) {
+    	Client client = clientMapper.toEntity(clientDTO);
         return clientRepository.save(client);
     }
-
-    public Optional<Client> findClientById(Long id) {
-        return clientRepository.findById(id);
+    
+    public Optional<ClientDTO> findClientById(Long id) {
+        return clientRepository.findById(id)
+                               .map(clientMapper::toDTO);
     }
     
-    public List<Client> findAllClient(Long id) {
-        List<Client> allClient =  clientRepository.findAll();
-        return allClient;
+    public List<ClientDTO> findAllClients() {
+        List<Client> allClients = clientRepository.findAll();
+        return allClients.stream()
+                         .map(clientMapper::toDTO)
+                         .toList();
     }
 
-    public Client updateClient(Long id, Map<String, Object> updateRequest) {
+    public ClientDTO updateClient(Long id, Map<String, Object> updateRequest) {
 
     	Client existingClient = clientRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + id));
@@ -53,15 +63,17 @@ public class ClientService {
                     throw new IllegalArgumentException("Invalid field to update: " + field);
             }
         });
-
-        return clientRepository.save(existingClient);
+        
+        Client updatedClient = clientRepository.save(existingClient);
+        return clientMapper.toDTO(updatedClient);
     }
     
     public void deleteClient(Long id) {
         clientRepository.deleteById(id);
     }
 
-    public Page<Client> getClientsOrderedByInsuranceValue(Pageable pageable) {
-        return clientRepository.findClientesOrderedByTotalSeguroValue(pageable);
+    public Page<ClientDTO> getClientsOrderedByInsuranceValue(Pageable pageable) {
+        return clientRepository.findClientesOrderedByTotalSeguroValue(pageable)
+        		.map(clientMapper::toDTO);
     }
 }
