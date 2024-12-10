@@ -2,11 +2,11 @@ package service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import Mappers.ClientMapper;
 import Mappers.QuoteMapper;
 import domain.Client;
 import domain.Insurance;
@@ -74,10 +74,15 @@ public class QuoteService {
 	        quoteRepository.deleteById(id);
 	    }
 
-	    public List<QuoteDTO> getAllQuotes() {
+	    public List<QuoteDTO> findAllQuotes() {
 	        return quoteRepository.findAll()
 	        		.stream()
 	        		.map(quoteMapper::toDTO)
 	        		.toList();
+	    }
+	    
+	    public Optional<QuoteDTO> findByIdQuotes(Long id) {
+	        return quoteRepository.findById(id)
+	        		.map(quoteMapper::toDTO);
 	    }
 }

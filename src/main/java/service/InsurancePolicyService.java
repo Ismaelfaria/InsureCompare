@@ -37,13 +37,11 @@ public class InsurancePolicyService {
         		.map(insurancePolicyMapper::toDTO);
     }
     
-    public List<InsurancePolicyDTO> findAllInsurancePolicy(Long id) {
-        List<InsurancePolicyDTO> allInsurancePolicy =  insurancePolicyRepository.findAll()
+    public List<InsurancePolicyDTO> findAllInsurancePolicy() {
+    	return insurancePolicyRepository.findAll()
         		.stream()
         		.map(insurancePolicyMapper::toDTO)
         		.toList();
-        
-        return allInsurancePolicy;
     }
     
     public InsurancePolicy savePolicy(InsurancePolicyDTO policyDTO) {
