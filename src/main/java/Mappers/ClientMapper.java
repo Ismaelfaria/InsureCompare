@@ -9,11 +9,12 @@ import dto.ClientDTO;
 public class ClientMapper {
 		
 	public Client toEntity(ClientDTO dto) {
-        Client client = new Client();
-        client.setName(dto.name());
-        client.setEmail(dto.email());
-        client.setPhone(dto.phone());
-        client.setAddress(dto.address());
+        Client client = new Client(
+        null,
+        dto.name(),
+        dto.email(),
+        dto.phone(),
+        dto.address());
         return client;
     }
 
