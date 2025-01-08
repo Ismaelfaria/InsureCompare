@@ -6,13 +6,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import Mappers.ClientMapper;
 import domain.Client;
 import dto.ClientDTO;
+import jakarta.persistence.EntityNotFoundException;
 import repository.ClientRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,12 +51,12 @@ class ClientServiceTest {
 
 	@BeforeEach
 	public void setUpDTO() {
-		clientDTO = new ClientDTO("Angelica", "Angelica@gmail.com", "111111111", "Rua das Cruzes 54");
+		clientDTO = new ClientDTO("test", "test1@gmail.com", "111111111", "Rua das Cruzes 54");
 	}
 
 	@BeforeEach
 	public void setUpEntity() {
-		client = new Client(12345L, "Angelica", "Angelica@gmail.com", "111111111", "Rua das Cruzes 54");
+		client = new Client(1L, "test", "test@gmail.com", "111111111", "Rua das Cruzes 54");
 	}
 
 	@BeforeEach
@@ -68,6 +75,7 @@ class ClientServiceTest {
 		assertEquals(client.getName(), savedClient.getName());
 		assertEquals(client.getEmail(), savedClient.getEmail());
 		assertEquals(client.getAddress(), savedClient.getAddress());
+		
 		verify(repository).save(client);
 		verify(clientMapper).toEntity(clientDTO);
 		verify(repository).save(client);
@@ -94,8 +102,8 @@ class ClientServiceTest {
 		Optional<ClientDTO> result = service.findClientById(client.getId());
 
 		assertNotNull(result);
-		assertEquals(client.getName(), "Angelica");
-		assertEquals(client.getEmail(), "Angelica@gmail.com");
+		assertEquals(client.getName(), "test");
+		assertEquals(client.getEmail(), "test@gmail.com");
 		assertEquals(client.getPhone(), "111111111");
 		assertEquals(client.getAddress(), "Rua das Cruzes 54");
 
@@ -105,12 +113,13 @@ class ClientServiceTest {
 
 	@Test
 	void testFindClientByIdWhenClientDoesNotExist() {
-		long invalidId = 00000L;
+		long invalidId = 999L;
 		when(repository.findById(invalidId)).thenReturn(Optional.empty());
 
 		Optional<ClientDTO> result = service.findClientById(invalidId);
 
 		assertTrue(result.isEmpty());
+		
 		verify(repository).findById(invalidId);
 		verify(repository, times(1)).findById(invalidId);
 	}
@@ -126,7 +135,7 @@ class ClientServiceTest {
 		List<ClientDTO> result = service.findAllClients();
 
 		assertEquals(1, result.size());
-	    assertEquals("Angelica", result.get(0).name());
+	    assertEquals("test", result.get(0).name());
 
 	    verify(repository, times(1)).findAll();
 	}
@@ -149,14 +158,12 @@ class ClientServiceTest {
         Map<String, Object> updateRequest = new HashMap<>();
         updateRequest.put("name", "New Name");
 
-        Client existingClient = new Client(clientId, "Old Name", "old.email@example.com", "Old Address", "123456789");
-
         Client updatedClient = new Client(clientId, "New Name", "new.email@example.com", "Old Address", "123456789");
 
         ClientDTO updatedClientDTO = new ClientDTO("New Name", "new.email@example.com", "Old Address", "123456789");
 
-        when(repository.findById(clientId)).thenReturn(Optional.of(existingClient));
-        when(repository.save(existingClient)).thenReturn(updatedClient);
+        when(repository.findById(clientId)).thenReturn(Optional.of(client));
+        when(repository.save(client)).thenReturn(updatedClient);
         when(clientMapper.toDTO(updatedClient)).thenReturn(updatedClientDTO);
 
         ClientDTO result = service.updateClient(clientId, updateRequest);
@@ -166,41 +173,134 @@ class ClientServiceTest {
         assertEquals("new.email@example.com", result.email());
 
         verify(repository, times(1)).findById(clientId);
-        verify(repository, times(1)).save(existingClient);
+        verify(repository, times(1)).save(client);
         verify(clientMapper, times(1)).toDTO(updatedClient);
     }
 	
 
 	@Test
 	void testUpdateClientWithInvalidFields() {
+	    Map<String, Object> updateRequest = new HashMap<>();
+	    updateRequest.put("invalidField", "Invalid Value");
+
+	    when(repository.findById(client.getId())).thenReturn(Optional.of(client));
+
+	    assertThrows(IllegalArgumentException.class, () -> {
+	        service.updateClient(client.getId(), updateRequest);
+	    });
+
+	    verify(repository, times(1)).findById(client.getId());
+	    verify(repository, never()).save(any(Client.class));
 	}
 
 	@Test
 	void testUpdateClientWhenClientDoesNotExist() {
-	}
+		Long invalidClientId = 999L; 
+		
+	    Map<String, Object> updateRequest = new HashMap<>();
+	    updateRequest.put("name", "New Name");
 
-	@Test
-	void testUpdateClientWithPartialData() {
+	    when(repository.findById(invalidClientId)).thenReturn(Optional.empty());
+
+	    EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+	        service.updateClient(invalidClientId, updateRequest);
+	    });
+
+	    assertEquals("Client not found with id: " + invalidClientId, exception.getMessage());
+
+	    verify(repository, times(1)).findById(invalidClientId);
+	    verify(repository, never()).save(any(Client.class));
 	}
 
 	@Test
 	void testDeleteClientWithValidId() {
+		doNothing().when(repository).deleteById(client.getId());
+
+		service.deleteClient(client.getId());
+
+		verify(repository, times(1)).deleteById(client.getId());
 	}
 
 	@Test
 	void testDeleteClientWhenClientDoesNotExist() {
+		Long invalidClientId = 999L;
+		
+		doThrow(new EntityNotFoundException("Client not found with id: " + invalidClientId))
+	        .when(repository).deleteById(invalidClientId);
+
+	    assertThrows(EntityNotFoundException.class, () -> service.deleteClient(invalidClientId));
+	    
+	    verify(repository, times(1)).deleteById(invalidClientId);
 	}
 
 	@Test
 	void testGetClientsOrderedByInsuranceValueWithValidPage() {
+		Pageable pageable = PageRequest.of(0, 5, Sort.by("insuranceValue").descending());
+
+	    Client client1 = new Client(1L, "test1", "test1@gmail.com", "111111111", "Rua das Cruzes 54");
+	    Client client2 = new Client(2L, "test2", "test2@gmail.com", "222222222", "Rua das Cruzes 54");
+	    List<Client> clients = Arrays.asList(client1, client2);
+	    Page<Client> clientPage = new PageImpl<>(clients, pageable, clients.size());
+
+	    when(repository.findClientesOrderedByTotalSeguroValue(pageable)).thenReturn(clientPage);
+	    when(clientMapper.toDTO(any(Client.class))).thenAnswer(invocation -> {
+	        Client client = invocation.getArgument(0);
+	        return new ClientDTO(client.getName(), client.getEmail(), client.getPhone(), client.getAddress());
+	    });
+
+	    Page<ClientDTO> result = service.getClientsOrderedByInsuranceValue(pageable);
+
+	    assertNotNull(result);
+	    assertEquals(2, result.getContent().size());
+	    assertEquals("test1", result.getContent().get(0).name());
+	    assertEquals("111111111", result.getContent().get(0).phone());
+
+	    verify(repository, times(1)).findClientesOrderedByTotalSeguroValue(pageable);
 	}
 
 	@Test
 	void testGetClientsOrderedByInsuranceValueWithEmptyResult() {
+		 Pageable pageable = PageRequest.of(0, 5, Sort.by("insuranceValue").descending());
+
+		    Page<Client> emptyPage = new PageImpl<>(new ArrayList<>(), pageable, 0);
+
+		    when(repository.findClientesOrderedByTotalSeguroValue(pageable)).thenReturn(emptyPage);
+
+		    Page<ClientDTO> result = service.getClientsOrderedByInsuranceValue(pageable);
+
+		    assertNotNull(result);
+		    assertTrue(result.getContent().isEmpty());
+		    assertEquals(0, result.getTotalElements());
+		    
+		    verify(repository, times(1)).findClientesOrderedByTotalSeguroValue(pageable);
 	}
 
 	@Test
 	void testGetClientsOrderedByInsuranceValueWithPagination() {
-	}
+		Pageable pageable = PageRequest.of(0, 2, Sort.by("insuranceValue").descending());
 
+	    Client client1 = new Client(1L, "test1", "test1@gmail.com", "111111111", "Rua das Cruzes 54");
+	    Client client2 = new Client(2L, "test2", "test2@gmail.com", "22222222", "Rua das Cruzes 54");
+
+	    List<Client> clients = Arrays.asList(client1, client2);
+	    Page<Client> clientPage = new PageImpl<>(clients, pageable, clients.size());
+
+	    when(repository.findClientesOrderedByTotalSeguroValue(pageable)).thenReturn(clientPage);
+	    when(clientMapper.toDTO(client1)).thenReturn(new ClientDTO("test1", "test1@gmail.com", "111111111", "Rua das Cruzes 54"));
+	    when(clientMapper.toDTO(client2)).thenReturn(new ClientDTO("test2", "test2@gmail.com", "22222222", "Rua das Cruzes 54"));
+
+	    Page<ClientDTO> result = service.getClientsOrderedByInsuranceValue(pageable);
+
+	    assertNotNull(result);
+	    assertEquals(2, result.getTotalElements());
+	    assertEquals(2, result.getContent().size());
+	    assertEquals("test1", result.getContent().get(0).name());
+	    assertEquals("test1@gmail.com", result.getContent().get(0).email());
+	    assertEquals("test2", result.getContent().get(1).name());
+	    assertEquals("test2@gmail.com", result.getContent().get(1).email());
+
+	    verify(repository, times(1)).findClientesOrderedByTotalSeguroValue(pageable);
+	    verify(clientMapper, times(1)).toDTO(client1);
+	    verify(clientMapper, times(1)).toDTO(client2);
+	}
 }
