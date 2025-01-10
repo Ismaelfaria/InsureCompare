@@ -12,11 +12,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import Mappers.ClientMapper;
-import domain.Client;
-import dto.ClientDTO;
+import app.dto.ClientDTO;
+import app.mappers.ClientMapper;
+import app.service.ClientService;
+import domain.entity.Client;
+import infra.repository.ClientRepository;
 import jakarta.persistence.EntityNotFoundException;
-import repository.ClientRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
