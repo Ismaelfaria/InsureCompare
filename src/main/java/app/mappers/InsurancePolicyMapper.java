@@ -23,8 +23,8 @@ public class InsurancePolicyMapper {
 	public InsurancePolicy toEntity(InsurancePolicyDTO dto) {
 		InsurancePolicy insurancePolicy = new InsurancePolicy();
 
-		Client client = clientRepository.findById(dto.customerId())
-				.orElseThrow(() -> new IllegalArgumentException("Client with ID " + dto.customerId() + " not found"));
+		Client client = clientRepository.findById(dto.clientId())
+				.orElseThrow(() -> new IllegalArgumentException("Client with ID " + dto.clientId() + " not found"));
 
 		Insurance insurance = insuranceRepository.findById(dto.insuranceId()).orElseThrow(
 				() -> new IllegalArgumentException("Insurance with ID " + dto.insuranceId() + " not found"));

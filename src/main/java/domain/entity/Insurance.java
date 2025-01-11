@@ -10,8 +10,21 @@ public class Insurance {
     private Long id;  
     private String type; 
     private Double basePrice; 
+    
+    public Insurance(Long id, String type, Double basePrice) {
+		super();
+		this.id = id;
+		this.type = type;
+		this.basePrice = basePrice;
+	}
+    
 
-    public Long getId() {
+	public Insurance() {
+		super();
+	}
+
+
+	public Long getId() {
         return id;
     }
 

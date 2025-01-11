@@ -14,9 +14,24 @@ public class InsurancePolicy {
     private Insurance insurance;  
     private String policyInsuranceNumber;  
     private String status;
+    
 
-    // Getters and Setters
-    public Long getId() {
+    public InsurancePolicy(Long id, Client client, Insurance insurance, String policyInsuranceNumber, String status) {
+		super();
+		this.id = id;
+		this.client = client;
+		this.insurance = insurance;
+		this.policyInsuranceNumber = policyInsuranceNumber;
+		this.status = status;
+	}
+    
+
+	public InsurancePolicy() {
+		super();
+	}
+
+
+	public Long getId() {
         return id;
     }
 
@@ -28,8 +43,8 @@ public class InsurancePolicy {
         return client;
     }
 
-    public void setClient(Client customer) {
-        this.client = customer;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public Insurance getInsurance() {
