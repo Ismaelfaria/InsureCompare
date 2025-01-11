@@ -66,6 +66,36 @@ class InsurancePolicyServiceTest {
 
 	@Test
 	void testFindPoliciesByClientAndStatusWithValidClientAndStatus() {
+		String activeStatus = "ACTIVE";
+
+		InsurancePolicy insurancePolicy1 = new InsurancePolicy();
+		insurancePolicy1.setId(1L);
+		insurancePolicy1.setClient(client);
+		insurancePolicy1.setStatus(activeStatus);
+
+		InsurancePolicy insurancePolicy2 = new InsurancePolicy();
+		insurancePolicy2.setId(2L);
+		insurancePolicy2.setClient(client);
+		insurancePolicy2.setStatus(activeStatus);
+
+		List<InsurancePolicy> insurancePolicies = List.of(insurancePolicy1, insurancePolicy2);
+
+		when(insurancePolicyRepository.findByCustomerAndStatus(client, activeStatus)).thenReturn(insurancePolicies);
+
+		InsurancePolicyDTO insurancePolicyDTO1 = new InsurancePolicyDTO(insurancePolicy1.getId(), client.getId(),
+				insurancePolicy1.getPolicyInsuranceNumber(), insurancePolicy1.getStatus());
+		InsurancePolicyDTO insurancePolicyDTO2 = new InsurancePolicyDTO(insurancePolicy2.getId(), client.getId(),
+				insurancePolicy2.getPolicyInsuranceNumber(), insurancePolicy2.getStatus());
+
+		when(insurancePolicyMapper.toDTO(insurancePolicy1)).thenReturn(insurancePolicyDTO1);
+		when(insurancePolicyMapper.toDTO(insurancePolicy2)).thenReturn(insurancePolicyDTO2);
+
+		List<InsurancePolicyDTO> result = insurancePolicyService.findPoliciesByClientAndStatus(client, activeStatus);
+
+		assertNotNull(result);
+		assertEquals(2, result.size());
+		verify(insurancePolicyRepository).findByCustomerAndStatus(client, activeStatus);
+		verify(insurancePolicyMapper, times(2)).toDTO(any(InsurancePolicy.class));
 	}
 
 	@Test
