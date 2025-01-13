@@ -30,6 +30,7 @@ import jakarta.persistence.EntityNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,86 +57,152 @@ class InsurancePolicyServiceTest {
 	static Client client;
 	static Insurance insurance;
 	static InsurancePolicy insurancePolicy;
+	static InsurancePolicyDTO insurancePolicyDTO;
 
 	@BeforeAll
 	public static void setUpEntities() {
 		client = new Client(1L, "John Doe", "john.doe@gmail.com", "123456789", "123 Main St");
 		insurance = new Insurance(1L, "Health Insurance", 500.0);
 		insurancePolicy = new InsurancePolicy(1L, client, insurance, "12345", "ACTIVE");
+		insurancePolicyDTO = new InsurancePolicyDTO(insurancePolicy.getId(), client.getId(),
+				insurancePolicy.getPolicyInsuranceNumber(), insurancePolicy.getStatus());
 	}
 
 	@Test
 	void testFindPoliciesByClientAndStatusWithValidClientAndStatus() {
 		String activeStatus = "ACTIVE";
 
-		InsurancePolicy insurancePolicy1 = new InsurancePolicy();
-		insurancePolicy1.setId(1L);
-		insurancePolicy1.setClient(client);
-		insurancePolicy1.setStatus(activeStatus);
-
-		InsurancePolicy insurancePolicy2 = new InsurancePolicy();
-		insurancePolicy2.setId(2L);
-		insurancePolicy2.setClient(client);
-		insurancePolicy2.setStatus(activeStatus);
-
-		List<InsurancePolicy> insurancePolicies = List.of(insurancePolicy1, insurancePolicy2);
-
-		when(insurancePolicyRepository.findByCustomerAndStatus(client, activeStatus)).thenReturn(insurancePolicies);
-
-		InsurancePolicyDTO insurancePolicyDTO1 = new InsurancePolicyDTO(insurancePolicy1.getId(), client.getId(),
-				insurancePolicy1.getPolicyInsuranceNumber(), insurancePolicy1.getStatus());
-		InsurancePolicyDTO insurancePolicyDTO2 = new InsurancePolicyDTO(insurancePolicy2.getId(), client.getId(),
-				insurancePolicy2.getPolicyInsuranceNumber(), insurancePolicy2.getStatus());
-
-		when(insurancePolicyMapper.toDTO(insurancePolicy1)).thenReturn(insurancePolicyDTO1);
-		when(insurancePolicyMapper.toDTO(insurancePolicy2)).thenReturn(insurancePolicyDTO2);
+		when(insurancePolicyRepository.findByCustomerAndStatus(client, activeStatus))
+				.thenReturn(List.of(insurancePolicy));
+		when(insurancePolicyMapper.toDTO(insurancePolicy)).thenReturn(insurancePolicyDTO);
 
 		List<InsurancePolicyDTO> result = insurancePolicyService.findPoliciesByClientAndStatus(client, activeStatus);
 
 		assertNotNull(result);
-		assertEquals(2, result.size());
+		assertEquals(1, result.size());
 		verify(insurancePolicyRepository).findByCustomerAndStatus(client, activeStatus);
-		verify(insurancePolicyMapper, times(2)).toDTO(any(InsurancePolicy.class));
+		verify(insurancePolicyMapper, times(1)).toDTO(any(InsurancePolicy.class));
 	}
 
 	@Test
 	void testFindPoliciesByClientAndStatusWithInvalidClient() {
+		String activeStatus = "ACTIVE";
+
+		when(insurancePolicyRepository.findByCustomerAndStatus(null, activeStatus))
+				.thenThrow(new IllegalArgumentException("Customer cannot be null"));
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			insurancePolicyService.findPoliciesByClientAndStatus(null, activeStatus);
+		});
 	}
 
 	@Test
 	void testFindPoliciesByClientAndStatusWithNonExistentStatus() {
+
+		when(insurancePolicyRepository.findByCustomerAndStatus(client, null)).thenReturn(Collections.emptyList());
+
+		var result = insurancePolicyService.findPoliciesByClientAndStatus(client, null);
+
+		assertTrue(result.isEmpty(), "The result should be an empty list for a non-existent status");
 	}
 
 	@Test
 	void testFindInsurancePolicyByIdWithValidId() {
+		when(insurancePolicyRepository.findById(insurancePolicy.getId())).thenReturn(Optional.of(insurancePolicy));
+		when(insurancePolicyMapper.toDTO(insurancePolicy)).thenReturn(insurancePolicyDTO);
+
+		Optional<InsurancePolicyDTO> result = insurancePolicyService.findInsurancePolicyById(insurancePolicy.getId());
+
+		assertTrue(result.isPresent());
+		assertEquals(insurancePolicyDTO, result.get());
+		assertEquals(insurancePolicyDTO.clientId(), result.get().clientId());
+		assertEquals(insurancePolicyDTO.insuranceId(), result.get().insuranceId());
+		assertEquals(insurancePolicyDTO.status(), result.get().status());
+		assertEquals(insurancePolicyDTO.policyNumber(), result.get().policyNumber());
 	}
 
 	@Test
 	void testFindInsurancePolicyByIdWithInvalidId() {
+		when(insurancePolicyRepository.findById(null)).thenReturn(Optional.empty());
+
+		Optional<InsurancePolicyDTO> result = insurancePolicyService.findInsurancePolicyById(null);
+
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	void testFindInsurancePolicyByIdWhenPolicyDoesNotExist() {
+		Long invalidId = 999L;
+
+		when(insurancePolicyRepository.findById(invalidId)).thenReturn(Optional.empty());
+
+		Optional<InsurancePolicyDTO> result = insurancePolicyService.findInsurancePolicyById(invalidId);
+
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	void testFindAllInsurancePolicyWhenPoliciesExist() {
+		List<InsurancePolicy> policies = List.of(insurancePolicy);
+
+		when(insurancePolicyRepository.findAll()).thenReturn(policies);
+		when(insurancePolicyMapper.toDTO(insurancePolicy)).thenReturn(insurancePolicyDTO);
+
+		List<InsurancePolicyDTO> result = insurancePolicyService.findAllInsurancePolicy();
+
+		assertFalse(result.isEmpty());
+		assertEquals(1, result.size());
+		assertEquals(insurancePolicyDTO, result.get(0));
 	}
 
 	@Test
 	void testFindAllInsurancePolicyWhenNoPoliciesExist() {
+		when(insurancePolicyRepository.findAll()).thenReturn(Collections.emptyList());
+
+		List<InsurancePolicyDTO> result = insurancePolicyService.findAllInsurancePolicy();
+
+		assertTrue(result.isEmpty());
 	}
 
 	@Test
 	void testSavePolicyWithValidData() {
+		when(insurancePolicyRepository.save(insurancePolicy)).thenReturn(insurancePolicy);
+		when(insurancePolicyMapper.toEntity(insurancePolicyDTO)).thenReturn(insurancePolicy);
+
+		InsurancePolicy result = insurancePolicyService.savePolicy(insurancePolicyDTO);
+
+		assertEquals(insurancePolicy, result);
+		assertEquals(insurancePolicy.getId(), result.getId());
+		assertEquals(insurancePolicy.getInsurance(), result.getInsurance());
+		assertEquals(insurancePolicy.getPolicyInsuranceNumber(), result.getPolicyInsuranceNumber());
+		assertEquals(insurancePolicy.getStatus(), result.getStatus());
 	}
 
 	@Test
 	void testSavePolicyWithInvalidData() {
+		InsurancePolicy invalidPolicy = new InsurancePolicy();
+		invalidPolicy.setId(null);
+		invalidPolicy.setPolicyInsuranceNumber(null);
+		invalidPolicy.setStatus("INVALID_STATUS");
+
+		when(insurancePolicyRepository.save(null)).thenThrow(new IllegalArgumentException("Invalid policy data"));
+
+		InsurancePolicyDTO invalidPolicyDTO = new InsurancePolicyDTO(invalidPolicy.getId(), client.getId(),
+				invalidPolicy.getPolicyInsuranceNumber(), invalidPolicy.getStatus());
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			insurancePolicyService.savePolicy(invalidPolicyDTO);
+		});
 	}
 
 	@Test
 	void testSavePolicyWhenRepositoryFails() {
+		when(insurancePolicyRepository.save(any(InsurancePolicy.class)))
+				.thenThrow(new RuntimeException("Database error"));
+
+		assertThrows(RuntimeException.class, () -> {
+			insurancePolicyService.savePolicy(insurancePolicyDTO);
+		});
 	}
 
 	@Test
