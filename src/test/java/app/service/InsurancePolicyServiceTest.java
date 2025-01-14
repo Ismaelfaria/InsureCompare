@@ -3,33 +3,20 @@ package app.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
-import app.dto.ClientDTO;
 import app.dto.InsurancePolicyDTO;
-import app.mappers.ClientMapper;
 import app.mappers.InsurancePolicyMapper;
-import app.service.ClientService;
 import domain.entity.Client;
 import domain.entity.Insurance;
 import domain.entity.InsurancePolicy;
-import infra.repository.ClientRepository;
 import infra.repository.InsurancePolicyRepository;
 import jakarta.persistence.EntityNotFoundException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
