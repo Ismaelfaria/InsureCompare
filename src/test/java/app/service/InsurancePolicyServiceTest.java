@@ -42,50 +42,47 @@ class InsurancePolicyServiceTest {
 	private InsurancePolicyService insurancePolicyService;
 
 	static Client client;
-	static Insurance insurance;
 	static InsurancePolicy insurancePolicy;
 	static InsurancePolicyDTO insurancePolicyDTO;
+	static Long invalidId;
 
 	@BeforeAll
 	public static void setUpEntities() {
 		client = new Client(1L, "John Doe", "john.doe@gmail.com", "123456789", "123 Main St");
-		insurance = new Insurance(1L, "Health Insurance", 500.0);
+		Insurance insurance = new Insurance(1L, "Health Insurance", 500.0);
 		insurancePolicy = new InsurancePolicy(1L, client, insurance, "12345", "ACTIVE");
 		insurancePolicyDTO = new InsurancePolicyDTO(insurancePolicy.getId(), client.getId(),
-	    insurancePolicy.getPolicyInsuranceNumber(), insurancePolicy.getStatus());
+				insurancePolicy.getPolicyInsuranceNumber(), insurancePolicy.getStatus());
+		invalidId = 999L;
 	}
 
 	@Test
 	void testFindPoliciesByClientAndStatusWithValidClientAndStatus() {
-		String activeStatus = "ACTIVE";
-
-		when(insurancePolicyRepository.findByCustomerAndStatus(client, activeStatus))
+		when(insurancePolicyRepository.findByCustomerAndStatus(client, insurancePolicy.getStatus()))
 				.thenReturn(List.of(insurancePolicy));
 		when(insurancePolicyMapper.toDTO(insurancePolicy)).thenReturn(insurancePolicyDTO);
 
-		List<InsurancePolicyDTO> result = insurancePolicyService.findPoliciesByClientAndStatus(client, activeStatus);
+		List<InsurancePolicyDTO> result = insurancePolicyService.findPoliciesByClientAndStatus(client,
+				insurancePolicy.getStatus());
 
 		assertNotNull(result);
 		assertEquals(1, result.size());
-		verify(insurancePolicyRepository).findByCustomerAndStatus(client, activeStatus);
+		verify(insurancePolicyRepository).findByCustomerAndStatus(client, insurancePolicy.getStatus());
 		verify(insurancePolicyMapper, times(1)).toDTO(any(InsurancePolicy.class));
 	}
 
 	@Test
 	void testFindPoliciesByClientAndStatusWithInvalidClient() {
-		String activeStatus = "ACTIVE";
-
-		when(insurancePolicyRepository.findByCustomerAndStatus(null, activeStatus))
+		when(insurancePolicyRepository.findByCustomerAndStatus(null, insurancePolicy.getStatus()))
 				.thenThrow(new IllegalArgumentException("Customer cannot be null"));
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			insurancePolicyService.findPoliciesByClientAndStatus(null, activeStatus);
+			insurancePolicyService.findPoliciesByClientAndStatus(null, insurancePolicy.getStatus());
 		});
 	}
 
 	@Test
 	void testFindPoliciesByClientAndStatusWithNonExistentStatus() {
-
 		when(insurancePolicyRepository.findByCustomerAndStatus(client, null)).thenReturn(Collections.emptyList());
 
 		var result = insurancePolicyService.findPoliciesByClientAndStatus(client, null);
@@ -230,17 +227,16 @@ class InsurancePolicyServiceTest {
 
 	@Test
 	void testUpdateInsurancePolicyWhenPolicyDoesNotExist() {
-		Long nonExistentPolicyId = 999L;
 		Map<String, Object> updateRequest = new HashMap<>();
 		updateRequest.put("status", "NEW_STATUS");
 
-		when(insurancePolicyRepository.findById(nonExistentPolicyId)).thenReturn(Optional.empty());
+		when(insurancePolicyRepository.findById(invalidId)).thenReturn(Optional.empty());
 
 		assertThrows(EntityNotFoundException.class, () -> {
-			insurancePolicyService.updateInsurancePolicy(nonExistentPolicyId, updateRequest);
+			insurancePolicyService.updateInsurancePolicy(invalidId, updateRequest);
 		});
 
-		verify(insurancePolicyRepository, times(1)).findById(nonExistentPolicyId);
+		verify(insurancePolicyRepository, times(1)).findById(invalidId);
 		verify(insurancePolicyRepository, never()).save(any());
 		verify(insurancePolicyMapper, never()).toDTO(any());
 	}
@@ -258,14 +254,13 @@ class InsurancePolicyServiceTest {
 
 	@Test
 	void testDeletePolicyByIdWhenPolicyDoesNotExist() {
-		Long nonExistentPolicyId = 999L;
-		when(insurancePolicyRepository.existsById(nonExistentPolicyId)).thenReturn(false);
+		when(insurancePolicyRepository.existsById(invalidId)).thenReturn(false);
 
 		assertThrows(EntityNotFoundException.class, () -> {
-			insurancePolicyService.deletePolicyById(nonExistentPolicyId);
+			insurancePolicyService.deletePolicyById(invalidId);
 		});
 
-		verify(insurancePolicyRepository, times(1)).existsById(nonExistentPolicyId);
-		verify(insurancePolicyRepository, never()).deleteById(nonExistentPolicyId);
+		verify(insurancePolicyRepository, times(1)).existsById(invalidId);
+		verify(insurancePolicyRepository, never()).deleteById(invalidId);
 	}
 }

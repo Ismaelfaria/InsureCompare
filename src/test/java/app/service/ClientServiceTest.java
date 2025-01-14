@@ -1,7 +1,7 @@
 package app.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 
 import app.dto.ClientDTO;
 import app.mappers.ClientMapper;
-import app.service.ClientService;
 import domain.entity.Client;
 import infra.repository.ClientRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -44,25 +43,15 @@ class ClientServiceTest {
 	@Mock
 	private ClientMapper clientMapper;
 
-	ClientDTO clientDTO;
+	static ClientDTO clientDTO;
+	static Client client;
+	static ClientDTO clientInvalid;
 
-	Client client;
-
-	ClientDTO clientInvalid;
-
-	@BeforeEach
-	public void setUpDTO() {
-		clientDTO = new ClientDTO("test", "test1@gmail.com", "111111111", "Rua das Cruzes 54");
-	}
-
-	@BeforeEach
-	public void setUpEntity() {
+	@BeforeAll
+	public static void setUpEntities() {
 		client = new Client(1L, "test", "test@gmail.com", "111111111", "Rua das Cruzes 54");
-	}
-
-	@BeforeEach
-	public void setUpDTOInvalid() {
-		clientInvalid = new ClientDTO(null, null, "111111111", "Rua das Cruzes 54");
+		clientDTO = new ClientDTO(client.getName(), client.getEmail(), client.getPhone(), client.getAddress());
+		clientInvalid = new ClientDTO(null, null, client.getPhone() , client.getAddress());
 	}
 
 	@Test
@@ -155,27 +144,21 @@ class ClientServiceTest {
 
 	@Test
 	void testUpdateClientWithValidFields() {
-        Long clientId = 1L;
         Map<String, Object> updateRequest = new HashMap<>();
         updateRequest.put("name", "New Name");
 
-        Client updatedClient = new Client(clientId, "New Name", "new.email@example.com", "Old Address", "123456789");
+        when(repository.findById(client.getId())).thenReturn(Optional.of(client));
+        when(repository.save(client)).thenReturn(client);
+        when(clientMapper.toDTO(client)).thenReturn(clientDTO);
 
-        ClientDTO updatedClientDTO = new ClientDTO("New Name", "new.email@example.com", "Old Address", "123456789");
-
-        when(repository.findById(clientId)).thenReturn(Optional.of(client));
-        when(repository.save(client)).thenReturn(updatedClient);
-        when(clientMapper.toDTO(updatedClient)).thenReturn(updatedClientDTO);
-
-        ClientDTO result = service.updateClient(clientId, updateRequest);
+        ClientDTO result = service.updateClient(client.getId(), updateRequest);
 
         assertNotNull(result);
-        assertEquals("New Name", result.name());
-        assertEquals("new.email@example.com", result.email());
+        assertEquals("New Name", client.getName());
 
-        verify(repository, times(1)).findById(clientId);
+        verify(repository, times(1)).findById(client.getId());
         verify(repository, times(1)).save(client);
-        verify(clientMapper, times(1)).toDTO(updatedClient);
+        verify(clientMapper, times(1)).toDTO(client);
     }
 	
 
@@ -206,9 +189,9 @@ class ClientServiceTest {
 	    EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
 	        service.updateClient(invalidClientId, updateRequest);
 	    });
-
+	    
 	    assertEquals("Client not found with id: " + invalidClientId, exception.getMessage());
-
+	    
 	    verify(repository, times(1)).findById(invalidClientId);
 	    verify(repository, never()).save(any(Client.class));
 	}

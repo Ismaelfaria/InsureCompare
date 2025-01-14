@@ -3,42 +3,27 @@ package app.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.dto.InsuranceDTO;
-import app.dto.InsurancePolicyDTO;
 import app.dto.PaymentDTO;
-import app.mappers.InsuranceMapper;
-import app.mappers.InsurancePolicyMapper;
 import app.mappers.PaymentMapper;
 import domain.entity.Client;
 import domain.entity.Insurance;
 import domain.entity.InsurancePolicy;
 import domain.entity.Payment;
-import infra.repository.InsurancePolicyRepository;
-import infra.repository.InsuranceRepository;
 import infra.repository.PaymentRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

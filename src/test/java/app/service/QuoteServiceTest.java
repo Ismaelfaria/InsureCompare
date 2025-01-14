@@ -3,32 +3,22 @@ package app.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.dto.InsuranceDTO;
-import app.dto.InsurancePolicyDTO;
 import app.dto.QuoteDTO;
-import app.mappers.InsuranceMapper;
-import app.mappers.InsurancePolicyMapper;
 import app.mappers.QuoteMapper;
 import domain.entity.Client;
 import domain.entity.Insurance;
-import domain.entity.InsurancePolicy;
 import domain.entity.Quote;
 import infra.repository.ClientRepository;
-import infra.repository.InsurancePolicyRepository;
 import infra.repository.InsuranceRepository;
 import infra.repository.QuoteRepository;
 import jakarta.persistence.EntityNotFoundException;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

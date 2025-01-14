@@ -3,9 +3,6 @@ package app.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,17 +10,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import app.dto.InsuranceDTO;
-import app.dto.InsurancePolicyDTO;
 import app.mappers.InsuranceMapper;
-import app.mappers.InsurancePolicyMapper;
-import domain.entity.Client;
 import domain.entity.Insurance;
-import domain.entity.InsurancePolicy;
-import infra.repository.InsurancePolicyRepository;
 import infra.repository.InsuranceRepository;
 import jakarta.persistence.EntityNotFoundException;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +110,7 @@ class InsuranceServiceTest {
 
 	@Test
 	void testSaveInsurance_InvalidDTO_ThrowsException() {
-		InsuranceDTO invalidInsuranceDTO = new InsuranceDTO(null, null); 
+		InsuranceDTO invalidInsuranceDTO = new InsuranceDTO(null, null);
 		when(insuranceRepository.save(null)).thenThrow(new IllegalArgumentException("Invalid Insurance data"));
 
 		IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
@@ -133,7 +124,7 @@ class InsuranceServiceTest {
 		Map<String, Object> updateRequest = new HashMap<>();
 		updateRequest.put("type", "Updated Health Insurance");
 		updateRequest.put("baseprice", 600.0);
-		
+
 		when(insuranceRepository.findById(insurance.getId())).thenReturn(Optional.of(insurance));
 		when(insuranceRepository.save(insurance)).thenReturn(insurance);
 		when(insuranceMapper.toDTO(insurance)).thenReturn(insuranceDTO);
@@ -148,7 +139,7 @@ class InsuranceServiceTest {
 	@Test
 	void testUpdateInsurance_InvalidId_ThrowsEntityNotFoundException() {
 		Map<String, Object> updateRequest = new HashMap<>();
-		
+
 		when(insuranceRepository.findById(invalidId)).thenReturn(Optional.empty());
 
 		EntityNotFoundException thrown = assertThrows(EntityNotFoundException.class, () -> {
@@ -160,12 +151,14 @@ class InsuranceServiceTest {
 	@Test
 	void testUpdateInsurance_InvalidField_ThrowsIllegalArgumentException() {
 		Map<String, Object> updateRequest = new HashMap<>();
+		updateRequest.put("invalidField", "someValue");
 
 		when(insuranceRepository.findById(insurance.getId())).thenReturn(Optional.of(insurance));
 
 		IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
 			insuranceService.updateInsurance(insurance.getId(), updateRequest);
 		});
+
 		assertEquals("Invalid field to update: invalidField", thrown.getMessage());
 	}
 
