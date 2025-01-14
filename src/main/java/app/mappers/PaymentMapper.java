@@ -25,15 +25,15 @@ public class PaymentMapper {
 	public Payment toEntity(PaymentDTO dto) {
 		Payment payment = new Payment();
 
-		Client client = clientRepository.findById(dto.customerId())
-				.orElseThrow(() -> new IllegalArgumentException("Client with ID " + dto.customerId() + " not found"));
+		Client client = clientRepository.findById(dto.clientId())
+				.orElseThrow(() -> new IllegalArgumentException("Client with ID " + dto.clientId() + " not found"));
 
 		InsurancePolicy insurancePolicy = insurancePolicyRepository.findById(dto.policyId())
 				.orElseThrow(() -> new IllegalArgumentException("Policy with ID " + dto.policyId() + " not found"));
 
 		payment.setClient(client);
 		payment.setInsurancePolicy(insurancePolicy);
-		payment.setAmount(dto.amountPaid());
+		payment.setAmount(dto.amount());
 		payment.setPaymentMethod(dto.paymentMethod());
 		payment.setPaymentDate(LocalDate.now()); 
 

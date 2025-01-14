@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Pattern;
 public record PaymentDTO( 
 		@NotNull(message = "Customer ID cannot be null")
 	    @Positive(message = "Customer ID must be a positive number")
-	    Long customerId, 
+	    Long clientId, 
 
 	    @NotNull(message = "Policy ID cannot be null")
 	    @Positive(message = "Policy ID must be a positive number") 
@@ -19,7 +19,7 @@ public record PaymentDTO(
 	    @NotNull(message = "Amount paid cannot be null")
 	    @Positive(message = "Amount paid must be positive")  
 	    @Digits(integer = 10, fraction = 2, message = "Amount paid must have up to 2 decimal places")  
-	    Double amountPaid, 
+	    Double amount, 
 
 	    @NotNull(message = "Payment method cannot be null")
 	    @Size(min = 1, message = "Payment method cannot be empty")

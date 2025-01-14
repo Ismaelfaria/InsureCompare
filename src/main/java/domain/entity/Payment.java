@@ -26,6 +26,21 @@ public class Payment {
     private Client client;
 
     
+	public Payment(Long id, Double amount, LocalDate paymentDate, String paymentMethod, InsurancePolicy insurancePolicy,
+			Client client) {
+		super();
+		this.id = id;
+		this.amount = amount;
+		this.paymentDate = paymentDate;
+		this.paymentMethod = paymentMethod;
+		this.insurancePolicy = insurancePolicy;
+		this.client = client;
+	}
+
+	public Payment() {
+		super();
+	}
+
 	public Long getId() {
 		return id;
 	}
