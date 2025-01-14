@@ -5,7 +5,7 @@ import javax.validation.constraints.Positive;
 
 public record QuoteDTO(
 	    @NotNull(message = "Customer ID cannot be null")
-	    Long customerId, 
+	    Long clientId, 
 
 	    @NotNull(message = "Insurance ID cannot be null")
 	    Long insuranceId, 

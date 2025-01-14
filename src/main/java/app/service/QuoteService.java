@@ -63,8 +63,8 @@ public class QuoteService {
 	            }
 	        });
 
-	        Quote quoteUpdate = quoteRepository.save(existingQuote);
-	        return quoteMapper.toDTO(quoteUpdate);
+	        quoteRepository.save(existingQuote);
+	        return quoteMapper.toDTO(existingQuote);
 	    }
 	    
 	    public void deleteQuoteById(Long id) {

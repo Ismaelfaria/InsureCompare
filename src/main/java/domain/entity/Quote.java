@@ -15,8 +15,19 @@ public class Quote {
 	    private Insurance insurance;  
 	    private Double quotedPrice;  
 	    
-	    // Getters and Setters
-	    public Long getId() {
+	    public Quote() {
+			super();
+		}
+
+		public Quote(Long id, Client client, Insurance insurance, Double quotedPrice) {
+			super();
+			this.id = id;
+			this.client = client;
+			this.insurance = insurance;
+			this.quotedPrice = quotedPrice;
+		}
+
+		public Long getId() {
 	        return id;
 	    }
 
