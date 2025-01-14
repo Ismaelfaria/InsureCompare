@@ -65,7 +65,7 @@ class InsurancePolicyServiceTest {
 		insurance = new Insurance(1L, "Health Insurance", 500.0);
 		insurancePolicy = new InsurancePolicy(1L, client, insurance, "12345", "ACTIVE");
 		insurancePolicyDTO = new InsurancePolicyDTO(insurancePolicy.getId(), client.getId(),
-				insurancePolicy.getPolicyInsuranceNumber(), insurancePolicy.getStatus());
+	    insurancePolicy.getPolicyInsuranceNumber(), insurancePolicy.getStatus());
 	}
 
 	@Test
@@ -207,25 +207,78 @@ class InsurancePolicyServiceTest {
 
 	@Test
 	void testUpdateInsurancePolicyWithValidFields() {
+		Map<String, Object> updateRequest = new HashMap<>();
+		updateRequest.put("status", "NEW_STATUS");
+
+		when(insurancePolicyRepository.findById(insurancePolicy.getId())).thenReturn(Optional.of(insurancePolicy));
+		when(insurancePolicyRepository.save(insurancePolicy)).thenReturn(insurancePolicy);
+		when(insurancePolicyMapper.toDTO(insurancePolicy)).thenReturn(insurancePolicyDTO);
+
+		InsurancePolicyDTO result = insurancePolicyService.updateInsurancePolicy(insurancePolicy.getId(),
+				updateRequest);
+
+		assertNotNull(result);
+		assertEquals("NEW_STATUS", insurancePolicy.getStatus());
+
+		verify(insurancePolicyRepository, times(1)).findById(insurancePolicy.getId());
+		verify(insurancePolicyRepository, times(1)).save(insurancePolicy);
+		verify(insurancePolicyMapper, times(1)).toDTO(insurancePolicy);
 	}
 
 	@Test
 	void testUpdateInsurancePolicyWithInvalidFields() {
+		Map<String, Object> updateRequest = new HashMap<>();
+		updateRequest.put("invalidField", "someValue");
+
+		when(insurancePolicyRepository.findById(insurancePolicy.getId())).thenReturn(Optional.of(insurancePolicy));
+
+		assertThrows(IllegalArgumentException.class, () -> {
+			insurancePolicyService.updateInsurancePolicy(insurancePolicy.getId(), updateRequest);
+		});
+
+		verify(insurancePolicyRepository, times(1)).findById(insurancePolicy.getId());
+		verify(insurancePolicyRepository, never()).save(any());
+		verify(insurancePolicyMapper, never()).toDTO(any());
 	}
 
 	@Test
 	void testUpdateInsurancePolicyWhenPolicyDoesNotExist() {
-	}
+		Long nonExistentPolicyId = 999L;
+		Map<String, Object> updateRequest = new HashMap<>();
+		updateRequest.put("status", "NEW_STATUS");
 
-	@Test
-	void testUpdateInsurancePolicyWithPartialData() {
+		when(insurancePolicyRepository.findById(nonExistentPolicyId)).thenReturn(Optional.empty());
+
+		assertThrows(EntityNotFoundException.class, () -> {
+			insurancePolicyService.updateInsurancePolicy(nonExistentPolicyId, updateRequest);
+		});
+
+		verify(insurancePolicyRepository, times(1)).findById(nonExistentPolicyId);
+		verify(insurancePolicyRepository, never()).save(any());
+		verify(insurancePolicyMapper, never()).toDTO(any());
 	}
 
 	@Test
 	void testDeletePolicyByIdWithValidId() {
+		when(insurancePolicyRepository.existsById(insurancePolicy.getId())).thenReturn(true);
+		doNothing().when(insurancePolicyRepository).deleteById(insurancePolicy.getId());
+
+		insurancePolicyService.deletePolicyById(insurancePolicy.getId());
+
+		verify(insurancePolicyRepository, times(1)).existsById(insurancePolicy.getId());
+		verify(insurancePolicyRepository, times(1)).deleteById(insurancePolicy.getId());
 	}
 
 	@Test
 	void testDeletePolicyByIdWhenPolicyDoesNotExist() {
+		Long nonExistentPolicyId = 999L;
+		when(insurancePolicyRepository.existsById(nonExistentPolicyId)).thenReturn(false);
+
+		assertThrows(EntityNotFoundException.class, () -> {
+			insurancePolicyService.deletePolicyById(nonExistentPolicyId);
+		});
+
+		verify(insurancePolicyRepository, times(1)).existsById(nonExistentPolicyId);
+		verify(insurancePolicyRepository, never()).deleteById(nonExistentPolicyId);
 	}
 }
