@@ -9,8 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.dto.InsurancePolicyDTO;
-import app.mappers.InsurancePolicyMapper;
+import application.dto.InsurancePolicyDTO;
+import application.mappers.InsurancePolicyMapper;
+import application.service.InsurancePolicyService;
 import domain.entity.Client;
 import domain.entity.Insurance;
 import domain.entity.InsurancePolicy;

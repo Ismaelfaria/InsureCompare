@@ -9,8 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.dto.QuoteDTO;
-import app.mappers.QuoteMapper;
+import application.dto.QuoteDTO;
+import application.mappers.QuoteMapper;
+import application.service.QuoteService;
 import domain.entity.Client;
 import domain.entity.Insurance;
 import domain.entity.Quote;

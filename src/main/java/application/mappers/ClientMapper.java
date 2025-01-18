@@ -1,8 +1,8 @@
-package app.mappers;
+package application.mappers;
 
 import org.springframework.stereotype.Component;
 
-import app.dto.ClientDTO;
+import application.dto.ClientDTO;
 import domain.entity.Client;
 
 @Component
@@ -26,5 +26,4 @@ public class ClientMapper {
             entity.getAddress()
         );
     }
-	
 }

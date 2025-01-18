@@ -1,8 +1,8 @@
-package app.mappers;
+package application.mappers;
 
 import org.springframework.stereotype.Component;
 
-import app.dto.QuoteDTO;
+import application.dto.QuoteDTO;
 import domain.entity.Client;
 import domain.entity.Insurance;
 import domain.entity.Quote;

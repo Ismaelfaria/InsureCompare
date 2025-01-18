@@ -9,8 +9,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.dto.InsuranceDTO;
-import app.mappers.InsuranceMapper;
+import application.dto.InsuranceDTO;
+import application.mappers.InsuranceMapper;
+import application.service.InsuranceService;
 import domain.entity.Insurance;
 import infra.repository.InsuranceRepository;
 import jakarta.persistence.EntityNotFoundException;

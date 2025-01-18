@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.dto.QuoteDTO;
-import app.service.QuoteService;
+import application.dto.QuoteDTO;
+import application.service.QuoteService;
 import domain.entity.Quote;
 
 

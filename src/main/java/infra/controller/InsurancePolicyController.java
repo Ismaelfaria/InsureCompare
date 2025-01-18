@@ -3,8 +3,8 @@ package infra.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.dto.InsurancePolicyDTO;
-import app.service.InsurancePolicyService;
+import application.dto.InsurancePolicyDTO;
+import application.service.InsurancePolicyService;
 import domain.entity.InsurancePolicy;
 
 import java.util.List;

@@ -3,8 +3,8 @@ package infra.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.dto.PaymentDTO;
-import app.service.PaymentService;
+import application.dto.PaymentDTO;
+import application.service.PaymentService;
 import domain.entity.Payment;
 
 import org.springframework.beans.factory.annotation.Autowired;

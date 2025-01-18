@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.dto.ClientDTO;
-import app.service.ClientService;
+import application.dto.ClientDTO;
+import application.service.ClientService;
 import domain.entity.Client;
 import jakarta.persistence.EntityNotFoundException;
 

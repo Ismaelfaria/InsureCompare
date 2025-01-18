@@ -1,10 +1,10 @@
-package app.mappers;
+package application.mappers;
 
 import java.time.LocalDate;
 
 import org.springframework.stereotype.Component;
 
-import app.dto.PaymentDTO;
+import application.dto.PaymentDTO;
 import domain.entity.Client;
 import domain.entity.InsurancePolicy;
 import domain.entity.Payment;
@@ -44,5 +44,4 @@ public class PaymentMapper {
 		return new PaymentDTO(payment.getClient().getId(), payment.getInsurancePolicy().getId(), payment.getAmount(),
 				payment.getPaymentMethod());
 	}
-
 }

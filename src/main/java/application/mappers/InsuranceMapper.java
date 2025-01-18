@@ -1,8 +1,8 @@
-package app.mappers;
+package application.mappers;
 
 import org.springframework.stereotype.Component;
 
-import app.dto.InsuranceDTO;
+import application.dto.InsuranceDTO;
 import domain.entity.Insurance;
 
 @Component

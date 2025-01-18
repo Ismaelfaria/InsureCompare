@@ -1,6 +1,5 @@
 package domain.entity;
 
-import app.dto.ClientDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
