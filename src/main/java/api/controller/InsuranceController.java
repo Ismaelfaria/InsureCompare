@@ -30,20 +30,32 @@ public class InsuranceController {
 
 	@PostMapping
 	public ResponseEntity<Insurance> saveInsurance(@RequestBody InsuranceDTO insuranceDTO) {
-		Insurance savedInsurance = insuranceService.saveInsurance(insuranceDTO);
-		return new ResponseEntity<>(savedInsurance, HttpStatus.CREATED);
+		try {
+			Insurance savedInsurance = insuranceService.saveInsurance(insuranceDTO);
+			return new ResponseEntity<>(savedInsurance, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@GetMapping("/insurances/{id}")
-	public ResponseEntity<InsuranceDTO> getInsuranceById(@PathVariable Long id) {
-		Optional<InsuranceDTO> insuranceDTO = Optional.ofNullable(insuranceService.getInsuranceById(id));
-		return insuranceDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+	public ResponseEntity<InsuranceDTO> findInsuranceById(@PathVariable Long id) {
+		try {
+			Optional<InsuranceDTO> insuranceDTO = Optional.ofNullable(insuranceService.getInsuranceById(id));
+			return insuranceDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@GetMapping
-	public ResponseEntity<List<InsuranceDTO>> getAllInsurancesOrderedByPrice() {
-		List<InsuranceDTO> insurances = insuranceService.getAllInsurancesOrderedByPrice();
-		return ResponseEntity.ok(insurances);
+	public ResponseEntity<List<InsuranceDTO>> findAllInsurancesOrderedByPrice() {
+		try {
+			List<InsuranceDTO> insurances = insuranceService.getAllInsurancesOrderedByPrice();
+			return ResponseEntity.ok(insurances);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@PutMapping("/{id}")
@@ -56,6 +68,8 @@ public class InsuranceController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
@@ -66,6 +80,8 @@ public class InsuranceController {
 			return ResponseEntity.noContent().build();
 		} catch (EntityNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 }

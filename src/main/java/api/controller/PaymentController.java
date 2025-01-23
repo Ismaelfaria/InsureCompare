@@ -16,31 +16,45 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/Payment")
 public class PaymentController {
 
 	@Autowired
 	private PaymentService paymentService;
-	
+
 	@PostMapping("/payments")
-    public ResponseEntity<PaymentDTO> savePayment(@RequestBody PaymentDTO paymentDTO) {
-        Payment savedPayment = paymentService.savePayment(paymentDTO);
-        PaymentDTO savedPaymentDTO = paymentService.getPaymentById(savedPayment.getId());
-        return new ResponseEntity<>(savedPaymentDTO, HttpStatus.CREATED);
-    }
+	public ResponseEntity<PaymentDTO> savePayment(@RequestBody PaymentDTO paymentDTO) {
+		try {
+			Payment savedPayment = paymentService.savePayment(paymentDTO);
+			PaymentDTO savedPaymentDTO = paymentService.getPaymentById(savedPayment.getId());
+			return new ResponseEntity<>(savedPaymentDTO, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 
-    @GetMapping("/payments/{id}")
-    public ResponseEntity<PaymentDTO> getPaymentById(@PathVariable Long id) {
-        PaymentDTO paymentDTO = paymentService.getPaymentById(id);
-        return ResponseEntity.ok(paymentDTO);
-    }
+	@GetMapping("/payments/{id}")
+	public ResponseEntity<PaymentDTO> findPaymentById(@PathVariable Long id) {
+		try {
+			PaymentDTO paymentDTO = paymentService.getPaymentById(id);
+			return ResponseEntity.ok(paymentDTO);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 
-    @DeleteMapping("/payments/{id}")
-    public ResponseEntity<Void> deletePaymentById(@PathVariable Long id) {
-        paymentService.deletePaymentById(id);
-        return ResponseEntity.noContent().build();
-    }
-	
+	@DeleteMapping("/payments/{id}")
+	public ResponseEntity<Void> deletePaymentById(@PathVariable Long id) {
+		try {
+			paymentService.deletePaymentById(id);
+			return ResponseEntity.noContent().build();
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 }

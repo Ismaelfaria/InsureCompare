@@ -33,21 +33,33 @@ public class ClientController {
 
 	@PostMapping
 	public ResponseEntity<ClientDTO> saveClient(ClientDTO clientDTO) {
-		Client savedClient = clientService.saveClient(clientDTO);
-		ClientDTO savedClientDTO = clientService.findClientById(savedClient.getId()).orElse(null);
-		return new ResponseEntity<>(savedClientDTO, HttpStatus.CREATED);
+		try {
+			Client savedClient = clientService.saveClient(clientDTO);
+			ClientDTO savedClientDTO = clientService.findClientById(savedClient.getId()).orElse(null);
+			return new ResponseEntity<>(savedClientDTO, HttpStatus.CREATED);
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
 	@GetMapping("/clients/{id}")
 	public ResponseEntity<ClientDTO> findClientById(Long id) {
-		Optional<ClientDTO> clientDTO = clientService.findClientById(id);
-		return clientDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+		try {
+			Optional<ClientDTO> clientDTO = clientService.findClientById(id);
+			return clientDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
 
 	@GetMapping
 	public ResponseEntity<List<ClientDTO>> findAllClients() {
-		List<ClientDTO> clients = clientService.findAllClients();
-		return ResponseEntity.ok(clients);
+		try {
+			List<ClientDTO> clients = clientService.findAllClients();
+			return ResponseEntity.ok(clients);
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@PutMapping("/{id}")
@@ -60,18 +72,30 @@ public class ClientController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
-		clientService.deleteClient(id);
-		return ResponseEntity.noContent().build();
+		try {
+			clientService.deleteClient(id);
+			return ResponseEntity.noContent().build();
+		} catch (EntityNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@GetMapping("/ordered-by-insurance")
 	public ResponseEntity<Page<ClientDTO>> getClientsOrderedByInsuranceValue(Pageable pageable) {
-		Page<ClientDTO> clientsPage = clientService.getClientsOrderedByInsuranceValue(pageable);
-		return ResponseEntity.ok(clientsPage);
+		try {
+			Page<ClientDTO> clientsPage = clientService.getClientsOrderedByInsuranceValue(pageable);
+			return ResponseEntity.ok(clientsPage);
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 }

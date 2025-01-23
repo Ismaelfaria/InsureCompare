@@ -43,6 +43,13 @@ public class QuoteService {
 		Quote existingQuote = quoteRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Quote not found with id: " + id));
 
+		updateQuoteFields(existingQuote, updateRequest);
+
+		quoteRepository.save(existingQuote);
+		return quoteMapper.toDTO(existingQuote);
+	}
+	
+	private void updateQuoteFields(Quote existingQuote, Map<String, Object> updateRequest) {
 		updateRequest.forEach((field, newValue) -> {
 			switch (field.toLowerCase()) {
 			case "quotedprice":
@@ -62,9 +69,6 @@ public class QuoteService {
 				throw new IllegalArgumentException("Invalid field to update: " + field);
 			}
 		});
-
-		quoteRepository.save(existingQuote);
-		return quoteMapper.toDTO(existingQuote);
 	}
 
 	public void deleteQuoteById(Long id) {

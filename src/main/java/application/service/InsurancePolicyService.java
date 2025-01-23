@@ -43,13 +43,8 @@ public class InsurancePolicyService {
 	}
 
 	public InsurancePolicy savePolicy(InsurancePolicyDTO policyDTO) {
-
 		InsurancePolicy insurancePolicy = insurancePolicyMapper.toEntity(policyDTO);
-
-		PolicyApprovalMessageRequest request = new PolicyApprovalMessageRequest();
-		request.setPolicyId(insurancePolicy.getId());
-		request.setPolicyHolderNumber(insurancePolicy.getPolicyInsuranceNumber());
-		request.setPolicyStatus(insurancePolicy.getStatus());
+		PolicyApprovalMessageRequest request = createApprovalRequest(insurancePolicy);
 
 		policyApprovalService.sendApprovalRequest(request);
 
@@ -58,32 +53,41 @@ public class InsurancePolicyService {
 		return insurancePolicyRepository.save(insurancePolicy);
 	}
 
+	private PolicyApprovalMessageRequest createApprovalRequest (InsurancePolicy insurancePolicy) {
+		PolicyApprovalMessageRequest request = new PolicyApprovalMessageRequest();
+		request.setPolicyId(insurancePolicy.getId());
+		request.setPolicyHolderNumber(insurancePolicy.getPolicyInsuranceNumber());
+		request.setPolicyStatus(insurancePolicy.getStatus());
+		
+		return request;
+	}
+	
 	public InsurancePolicyDTO updateInsurancePolicy(Long id, Map<String, Object> updateRequest) {
 
-		InsurancePolicy existingPolicy = insurancePolicyRepository.findById(id)
+		InsurancePolicy existingInsurancePolicy = insurancePolicyRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Insurance policy not found with id: " + id));
 
-		updateInsurancePolicyFields(existingPolicy, updateRequest);
+		updateInsurancePolicyFields(existingInsurancePolicy, updateRequest);
 
-		InsurancePolicy insurancePolicyUpdate = insurancePolicyRepository.save(existingPolicy);
+		InsurancePolicy insurancePolicyUpdate = insurancePolicyRepository.save(existingInsurancePolicy);
 
 		return insurancePolicyMapper.toDTO(insurancePolicyUpdate);
 	}
 
-	private void updateInsurancePolicyFields(InsurancePolicy existingPolicy, Map<String, Object> updateRequest) {
+	private void updateInsurancePolicyFields(InsurancePolicy existingInsurancePolicy, Map<String, Object> updateRequest) {
 		updateRequest.forEach((field, newValue) -> {
 			switch (field.toLowerCase()) {
 			case "status":
-				existingPolicy.setStatus((String) newValue);
+				existingInsurancePolicy.setStatus((String) newValue);
 				break;
 			case "policyNumber":
-				existingPolicy.setPolicyInsuranceNumber((String) newValue);
+				existingInsurancePolicy.setPolicyInsuranceNumber((String) newValue);
 				break;
 			case "insurance":
-				existingPolicy.setInsurance((Insurance) newValue);
+				existingInsurancePolicy.setInsurance((Insurance) newValue);
 				break;
 			case "client":
-				existingPolicy.setClient((Client) newValue);
+				existingInsurancePolicy.setClient((Client) newValue);
 				break;
 			default:
 				throw new IllegalArgumentException("Invalid field to update: " + field);

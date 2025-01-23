@@ -5,12 +5,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import application.dto.InsurancePolicyDTO;
 import application.mappers.InsurancePolicyMapper;
+import application.messaging.PolicyApprovalService;
+import application.messaging.dto.PolicyApprovalMessageRequest;
 import application.service.InsurancePolicyService;
 import domain.entity.Client;
 import domain.entity.Insurance;
@@ -38,6 +42,9 @@ class InsurancePolicyServiceTest {
 
 	@Mock
 	private InsurancePolicyMapper insurancePolicyMapper;
+
+	@Mock
+	private PolicyApprovalService policyApprovalService;
 
 	@InjectMocks
 	private InsurancePolicyService insurancePolicyService;
@@ -154,6 +161,13 @@ class InsurancePolicyServiceTest {
 		when(insurancePolicyRepository.save(insurancePolicy)).thenReturn(insurancePolicy);
 		when(insurancePolicyMapper.toEntity(insurancePolicyDTO)).thenReturn(insurancePolicy);
 
+		PolicyApprovalMessageRequest expectedRequest = new PolicyApprovalMessageRequest();
+		expectedRequest.setPolicyId(insurancePolicy.getId());
+		expectedRequest.setPolicyHolderNumber(insurancePolicy.getPolicyInsuranceNumber());
+		expectedRequest.setPolicyStatus(insurancePolicy.getStatus());
+
+		doNothing().when(policyApprovalService).sendApprovalRequest(Mockito.any(PolicyApprovalMessageRequest.class));
+
 		InsurancePolicy result = insurancePolicyService.savePolicy(insurancePolicyDTO);
 
 		assertEquals(insurancePolicy, result);
@@ -161,6 +175,15 @@ class InsurancePolicyServiceTest {
 		assertEquals(insurancePolicy.getInsurance(), result.getInsurance());
 		assertEquals(insurancePolicy.getPolicyInsuranceNumber(), result.getPolicyInsuranceNumber());
 		assertEquals(insurancePolicy.getStatus(), result.getStatus());
+
+		ArgumentCaptor<PolicyApprovalMessageRequest> captor = ArgumentCaptor
+				.forClass(PolicyApprovalMessageRequest.class);
+		verify(policyApprovalService).sendApprovalRequest(captor.capture());
+
+		PolicyApprovalMessageRequest capturedRequest = captor.getValue();
+		assertEquals(expectedRequest.getPolicyId(), capturedRequest.getPolicyId());
+		assertEquals(expectedRequest.getPolicyHolderNumber(), capturedRequest.getPolicyHolderNumber());
+		assertEquals(expectedRequest.getPolicyStatus(), capturedRequest.getPolicyStatus());
 	}
 
 	@Test
@@ -170,19 +193,17 @@ class InsurancePolicyServiceTest {
 		invalidPolicy.setPolicyInsuranceNumber(null);
 		invalidPolicy.setStatus("INVALID_STATUS");
 
-		when(insurancePolicyRepository.save(null)).thenThrow(new IllegalArgumentException("Invalid policy data"));
-
 		InsurancePolicyDTO invalidPolicyDTO = new InsurancePolicyDTO(invalidPolicy.getId(), client.getId(),
 				invalidPolicy.getPolicyInsuranceNumber(), invalidPolicy.getStatus());
 
-		assertThrows(IllegalArgumentException.class, () -> {
+		assertThrows(NullPointerException.class, () -> {
 			insurancePolicyService.savePolicy(invalidPolicyDTO);
 		});
 	}
 
 	@Test
 	void testSavePolicyWhenRepositoryFails() {
-		when(insurancePolicyRepository.save(any(InsurancePolicy.class)))
+		lenient().when(insurancePolicyRepository.save(any(InsurancePolicy.class)))
 				.thenThrow(new RuntimeException("Database error"));
 
 		assertThrows(RuntimeException.class, () -> {

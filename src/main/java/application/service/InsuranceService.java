@@ -38,10 +38,16 @@ public class InsuranceService {
 	}
 
 	public InsuranceDTO updateInsurance(Long id, Map<String, Object> updateRequest) {
-
 		Insurance existingInsurance = insuranceRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Insurance not found with id: " + id));
 
+		updateInsuranceFields(existingInsurance, updateRequest);
+
+		Insurance insuranceUpdate = insuranceRepository.save(existingInsurance);
+		return insuranceMapper.toDTO(insuranceUpdate);
+	}
+
+	private void updateInsuranceFields(Insurance existingInsurance, Map<String, Object> updateRequest) {
 		updateRequest.forEach((field, newValue) -> {
 			switch (field.toLowerCase()) {
 			case "type":
@@ -54,8 +60,6 @@ public class InsuranceService {
 				throw new IllegalArgumentException("Invalid field to update: " + field);
 			}
 		});
-		Insurance insuranceUpdate = insuranceRepository.save(existingInsurance);
-		return insuranceMapper.toDTO(insuranceUpdate);
 	}
 
 	public void deleteInsuranceById(Long id) {

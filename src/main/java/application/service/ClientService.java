@@ -44,6 +44,13 @@ public class ClientService {
 		Client existingClient = clientRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + id));
 
+		updateClientFields(existingClient, updateRequest);
+
+		Client updatedClient = clientRepository.save(existingClient);
+		return clientMapper.toDTO(updatedClient);
+	}
+
+	private void updateClientFields(Client existingClient, Map<String, Object> updateRequest) {
 		updateRequest.forEach((field, newValue) -> {
 			switch (field.toLowerCase()) {
 			case "name":
@@ -62,9 +69,6 @@ public class ClientService {
 				throw new IllegalArgumentException("Invalid field to update: " + field);
 			}
 		});
-
-		Client updatedClient = clientRepository.save(existingClient);
-		return clientMapper.toDTO(updatedClient);
 	}
 
 	public void deleteClient(Long id) {
