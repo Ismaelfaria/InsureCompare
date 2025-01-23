@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import application.dto.InsurancePolicyDTO;
-import application.dtoMessage.PolicyApprovalMessageRequest;
 import application.mappers.InsurancePolicyMapper;
 import application.messaging.PolicyApprovalService;
+import application.messaging.dto.PolicyApprovalMessageRequest;
 import domain.entity.Client;
 import domain.entity.Insurance;
 import domain.entity.InsurancePolicy;

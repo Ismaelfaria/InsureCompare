@@ -1,4 +1,4 @@
-package application.dtoMessage;
+package application.messaging.dto;
 
 public class PolicyApprovalMessageResponse {
 
