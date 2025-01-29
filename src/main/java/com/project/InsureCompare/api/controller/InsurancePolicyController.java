@@ -3,7 +3,9 @@ package com.project.InsureCompare.api.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.InsureCompare.application.dto.ClientDTO;
 import com.project.InsureCompare.application.dto.InsurancePolicyDTO;
+import com.project.InsureCompare.application.service.ClientService;
 import com.project.InsureCompare.application.service.InsurancePolicyService;
 import com.project.InsureCompare.domain.entity.InsurancePolicy;
 
@@ -27,6 +29,9 @@ public class InsurancePolicyController {
 
 	@Autowired
 	private InsurancePolicyService insurancePolicyService;
+	
+	@Autowired
+	private ClientService clientService;
 
 	@PostMapping("/policies")
 	public ResponseEntity<InsurancePolicyDTO> savePolicy(@RequestBody InsurancePolicyDTO policyDTO) {
@@ -59,6 +64,21 @@ public class InsurancePolicyController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
+	
+	@GetMapping("/client/{clientId}/status/{status}")
+    public ResponseEntity<List<InsurancePolicyDTO>> getPoliciesByClientAndStatus(
+            @PathVariable Long clientId,
+            @PathVariable String status) {
+        
+        Optional<ClientDTO> client = clientService.findClientById(clientId);
+        
+        if (client.isEmpty()) {
+            return ResponseEntity.notFound().build(); 
+        }
+
+        List<InsurancePolicyDTO> policies = insurancePolicyService.findPoliciesByClientAndStatus(clientId, status);
+        return ResponseEntity.ok(policies);
+}
 
 	@PutMapping("/policies/{id}")
 	public ResponseEntity<InsurancePolicyDTO> updateInsurancePolicy(@PathVariable Long id,

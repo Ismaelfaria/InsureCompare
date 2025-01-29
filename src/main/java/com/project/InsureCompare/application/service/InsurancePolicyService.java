@@ -14,6 +14,7 @@ import com.project.InsureCompare.application.messaging.dto.PolicyApprovalMessage
 import com.project.InsureCompare.domain.entity.Client;
 import com.project.InsureCompare.domain.entity.Insurance;
 import com.project.InsureCompare.domain.entity.InsurancePolicy;
+import com.project.InsureCompare.infra.repository.ClientRepository;
 import com.project.InsureCompare.infra.repository.InsurancePolicyRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -25,10 +26,20 @@ public class InsurancePolicyService {
 	private InsurancePolicyRepository insurancePolicyRepository;
 
 	@Autowired
+	private ClientRepository clientRepository;
+
+	@Autowired
 	private PolicyApprovalService policyApprovalService;
 
 	@Autowired
 	private InsurancePolicyMapper insurancePolicyMapper;
+
+	public List<InsurancePolicyDTO> findPoliciesByClientAndStatus(Long clientId, String status) {
+		Optional<Client> clientByPolicies = clientRepository.findById(clientId);
+
+		return insurancePolicyRepository.findByCustomerAndStatus(clientByPolicies, status).stream()
+				.map(insurancePolicyMapper::toDTO).toList();
+	}
 
 	public Optional<InsurancePolicyDTO> findInsurancePolicyById(Long id) {
 		return insurancePolicyRepository.findById(id).map(insurancePolicyMapper::toDTO);
@@ -44,20 +55,18 @@ public class InsurancePolicyService {
 
 		policyApprovalService.sendApprovalRequest(request);
 
-		System.out.println("Mensagem enviada para a fila de aprovação.");
-
 		return insurancePolicyRepository.save(insurancePolicy);
 	}
 
-	private PolicyApprovalMessageRequest createApprovalRequest (InsurancePolicy insurancePolicy) {
+	private PolicyApprovalMessageRequest createApprovalRequest(InsurancePolicy insurancePolicy) {
 		PolicyApprovalMessageRequest request = new PolicyApprovalMessageRequest();
 		request.setPolicyId(insurancePolicy.getId());
 		request.setPolicyHolderNumber(insurancePolicy.getPolicyInsuranceNumber());
 		request.setPolicyStatus(insurancePolicy.getStatus());
-		
+
 		return request;
 	}
-	
+
 	public InsurancePolicyDTO updateInsurancePolicy(Long id, Map<String, Object> updateRequest) {
 
 		InsurancePolicy existingInsurancePolicy = insurancePolicyRepository.findById(id)
@@ -70,7 +79,8 @@ public class InsurancePolicyService {
 		return insurancePolicyMapper.toDTO(insurancePolicyUpdate);
 	}
 
-	private void updateInsurancePolicyFields(InsurancePolicy existingInsurancePolicy, Map<String, Object> updateRequest) {
+	private void updateInsurancePolicyFields(InsurancePolicy existingInsurancePolicy,
+			Map<String, Object> updateRequest) {
 		updateRequest.forEach((field, newValue) -> {
 			switch (field.toLowerCase()) {
 			case "status":

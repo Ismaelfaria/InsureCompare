@@ -19,6 +19,7 @@ import com.project.InsureCompare.application.service.InsurancePolicyService;
 import com.project.InsureCompare.domain.entity.Client;
 import com.project.InsureCompare.domain.entity.Insurance;
 import com.project.InsureCompare.domain.entity.InsurancePolicy;
+import com.project.InsureCompare.infra.repository.ClientRepository;
 import com.project.InsureCompare.infra.repository.InsurancePolicyRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -47,6 +48,9 @@ class InsurancePolicyServiceTest {
 	@Mock
 	private PolicyApprovalService policyApprovalService;
 
+	@Mock
+	private ClientRepository clientRepository;
+
 	@InjectMocks
 	private InsurancePolicyService insurancePolicyService;
 
@@ -64,7 +68,7 @@ class InsurancePolicyServiceTest {
 				insurancePolicy.getPolicyInsuranceNumber(), insurancePolicy.getStatus());
 		invalidId = 999L;
 	}
-	
+
 	@Test
 	void testFindInsurancePolicyByIdWithValidId() {
 		when(insurancePolicyRepository.findById(insurancePolicy.getId())).thenReturn(Optional.of(insurancePolicy));
@@ -176,6 +180,52 @@ class InsurancePolicyServiceTest {
 		assertThrows(RuntimeException.class, () -> {
 			insurancePolicyService.savePolicy(insurancePolicyDTO);
 		});
+	}
+
+	@Test
+	void testFindPoliciesByClientAndStatusWithValidClientAndStatus() {
+		client.setId(client.getId());
+
+		InsurancePolicy insurancePolicy = new InsurancePolicy();
+		insurancePolicy.setClient(client);
+		insurancePolicy.setStatus(insurancePolicy.getStatus());
+
+		when(clientRepository.findById(client.getId())).thenReturn(Optional.of(client));
+		when(insurancePolicyRepository.findByCustomerAndStatus(Optional.of(client), insurancePolicy.getStatus()))
+				.thenReturn(List.of(insurancePolicy));
+		when(insurancePolicyMapper.toDTO(insurancePolicy)).thenReturn(insurancePolicyDTO);
+
+		List<InsurancePolicyDTO> result = insurancePolicyService.findPoliciesByClientAndStatus(client.getId(), insurancePolicy.getStatus());
+
+		assertNotNull(result);
+		assertEquals(1, result.size());
+
+		verify(clientRepository).findById(client.getId());
+		verify(insurancePolicyRepository).findByCustomerAndStatus(Optional.of(client), insurancePolicy.getStatus());
+		verify(insurancePolicyMapper, times(1)).toDTO(any(InsurancePolicy.class));
+	}
+
+	@Test
+	void testFindPoliciesByClientAndStatusWithInvalidClient() {
+		when(insurancePolicyRepository.findByCustomerAndStatus(eq(Optional.empty()), eq(insurancePolicy.getStatus())))
+				.thenThrow(new IllegalArgumentException("Customer cannot be null"));
+		assertThrows(IllegalArgumentException.class, () -> {
+			insurancePolicyService.findPoliciesByClientAndStatus(null, insurancePolicy.getStatus());
+		});
+	}
+
+	@Test
+	void testFindPoliciesByClientAndStatusWithNonExistentStatus() {
+		when(clientRepository.findById(client.getId())).thenReturn(Optional.of(client));
+		when(insurancePolicyRepository.findByCustomerAndStatus(Optional.of(client), null))
+				.thenReturn(Collections.emptyList());
+
+		var result = insurancePolicyService.findPoliciesByClientAndStatus(client.getId(), null);
+
+		assertTrue(result.isEmpty(), "The result should be an empty list for a non-existent status");
+
+		verify(clientRepository).findById(client.getId());
+		verify(insurancePolicyRepository).findByCustomerAndStatus(Optional.of(client), null);
 	}
 
 	@Test

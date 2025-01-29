@@ -3,6 +3,8 @@ package com.project.InsureCompare.domain.entity;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -11,21 +13,21 @@ import jakarta.persistence.ManyToOne;
 public class Payment {
 
 	@Id
-    private Long id;
-    
-    private Double amount;
-    private LocalDate paymentDate;
-    private String paymentMethod;
-    
-    @ManyToOne
-    @JoinColumn(name = "insurance_policy_id")
-    private InsurancePolicy insurancePolicy;
-    
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private Client client;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    
+	private Double amount;
+	private LocalDate paymentDate;
+	private String paymentMethod;
+
+	@ManyToOne
+	@JoinColumn(name = "insurance_policy_id")
+	private InsurancePolicy insurancePolicy;
+
+	@ManyToOne
+	@JoinColumn(name = "client_id")
+	private Client client;
+
 	public Payment(Long id, Double amount, LocalDate paymentDate, String paymentMethod, InsurancePolicy insurancePolicy,
 			Client client) {
 		super();
@@ -87,5 +89,5 @@ public class Payment {
 
 	public void setClient(Client client) {
 		this.client = client;
-	} 
+	}
 }

@@ -217,7 +217,7 @@ class ClientServiceTest {
 
 		verify(repository, times(1)).deleteById(invalidClientId);
 	}
-/*
+
 	@Test
 	void testGetClientsOrderedByInsuranceValueWithValidPage() {
 		Pageable pageable = PageRequest.of(0, 5, Sort.by("insuranceValue").descending());
@@ -289,5 +289,5 @@ class ClientServiceTest {
 		verify(repository, times(1)).findClientesOrderedByTotalSeguroValue(pageable);
 		verify(clientMapper, times(1)).toDTO(client1);
 		verify(clientMapper, times(1)).toDTO(client2);
-	}*/
+	}
 }

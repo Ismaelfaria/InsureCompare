@@ -1,61 +1,64 @@
 package com.project.InsureCompare.domain.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Quote {
 
-	 	@Id
-	    private Long id;  
-	    @ManyToOne
-	    private Client client;  
-	    @ManyToOne
-	    private Insurance insurance;  
-	    private Double quotedPrice;  
-	    
-	    public Quote() {
-			super();
-		}
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@ManyToOne
+	private Client client;
+	@ManyToOne
+	private Insurance insurance;
+	private Double quotedPrice;
 
-		public Quote(Long id, Client client, Insurance insurance, Double quotedPrice) {
-			super();
-			this.id = id;
-			this.client = client;
-			this.insurance = insurance;
-			this.quotedPrice = quotedPrice;
-		}
+	public Quote() {
+		super();
+	}
 
-		public Long getId() {
-	        return id;
-	    }
+	public Quote(Long id, Client client, Insurance insurance, Double quotedPrice) {
+		super();
+		this.id = id;
+		this.client = client;
+		this.insurance = insurance;
+		this.quotedPrice = quotedPrice;
+	}
 
-	    public void setId(Long id) {
-	        this.id = id;
-	    }
+	public Long getId() {
+		return id;
+	}
 
-	    public Client getClient() {
-	        return client;
-	    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-	    public void setClient(Client client) {
-	        this.client = client;
-	    }
+	public Client getClient() {
+		return client;
+	}
 
-	    public Insurance getInsurance() {
-	        return insurance;
-	    }
+	public void setClient(Client client) {
+		this.client = client;
+	}
 
-	    public void setInsurance(Insurance insurance) {
-	        this.insurance = insurance;
-	    }
+	public Insurance getInsurance() {
+		return insurance;
+	}
 
-	    public Double getQuotedPrice() {
-	        return quotedPrice;
-	    }
+	public void setInsurance(Insurance insurance) {
+		this.insurance = insurance;
+	}
 
-	    public void setQuotedPrice(Double quotedPrice) {
-	        this.quotedPrice = quotedPrice;
-	    }
+	public Double getQuotedPrice() {
+		return quotedPrice;
+	}
+
+	public void setQuotedPrice(Double quotedPrice) {
+		this.quotedPrice = quotedPrice;
+	}
 }

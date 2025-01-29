@@ -62,6 +62,16 @@ public class ClientController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
+	
+	@GetMapping("/ordered-by-insurance")
+	public ResponseEntity<Page<ClientDTO>> getClientsOrderedByInsuranceValue(Pageable pageable) {
+		try {
+			Page<ClientDTO> clientsPage = clientService.getClientsOrderedByInsuranceValue(pageable);
+			return ResponseEntity.ok(clientsPage);
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<ClientDTO> updateClient(@PathVariable Long id,

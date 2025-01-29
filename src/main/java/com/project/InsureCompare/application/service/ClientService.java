@@ -35,6 +35,10 @@ public class ClientService {
 		return clientRepository.findById(id).map(clientMapper::toDTO);
 	}
 
+	public Page<ClientDTO> getClientsOrderedByInsuranceValue(Pageable pageable) {
+		return clientRepository.findClientesOrderedByTotalSeguroValue(pageable).map(clientMapper::toDTO);
+	}
+
 	public List<ClientDTO> findAllClients() {
 		List<Client> allClients = clientRepository.findAll();
 		return allClients.stream().map(clientMapper::toDTO).toList();
