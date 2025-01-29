@@ -9,14 +9,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import application.dto.PaymentDTO;
-import application.mappers.PaymentMapper;
-import application.service.PaymentService;
-import domain.entity.Client;
-import domain.entity.Insurance;
-import domain.entity.InsurancePolicy;
-import domain.entity.Payment;
-import infra.repository.PaymentRepository;
+import com.project.InsureCompare.application.dto.PaymentDTO;
+import com.project.InsureCompare.application.mappers.PaymentMapper;
+import com.project.InsureCompare.application.service.PaymentService;
+import com.project.InsureCompare.domain.entity.Client;
+import com.project.InsureCompare.domain.entity.Insurance;
+import com.project.InsureCompare.domain.entity.InsurancePolicy;
+import com.project.InsureCompare.domain.entity.Payment;
+import com.project.InsureCompare.infra.repository.PaymentRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 
 import java.time.LocalDate;

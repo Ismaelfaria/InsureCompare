@@ -9,15 +9,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import application.dto.QuoteDTO;
-import application.mappers.QuoteMapper;
-import application.service.QuoteService;
-import domain.entity.Client;
-import domain.entity.Insurance;
-import domain.entity.Quote;
-import infra.repository.ClientRepository;
-import infra.repository.InsuranceRepository;
-import infra.repository.QuoteRepository;
+import com.project.InsureCompare.application.dto.QuoteDTO;
+import com.project.InsureCompare.application.mappers.QuoteMapper;
+import com.project.InsureCompare.application.service.QuoteService;
+import com.project.InsureCompare.domain.entity.Client;
+import com.project.InsureCompare.domain.entity.Insurance;
+import com.project.InsureCompare.domain.entity.Quote;
+import com.project.InsureCompare.infra.repository.ClientRepository;
+import com.project.InsureCompare.infra.repository.InsuranceRepository;
+import com.project.InsureCompare.infra.repository.QuoteRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.HashMap;

@@ -9,11 +9,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import application.dto.InsuranceDTO;
-import application.mappers.InsuranceMapper;
-import application.service.InsuranceService;
-import domain.entity.Insurance;
-import infra.repository.InsuranceRepository;
+import com.project.InsureCompare.application.dto.InsuranceDTO;
+import com.project.InsureCompare.application.mappers.InsuranceMapper;
+import com.project.InsureCompare.application.service.InsuranceService;
+import com.project.InsureCompare.domain.entity.Insurance;
+import com.project.InsureCompare.infra.repository.InsuranceRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.HashMap;

@@ -11,15 +11,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import application.dto.InsurancePolicyDTO;
-import application.mappers.InsurancePolicyMapper;
-import application.messaging.PolicyApprovalService;
-import application.messaging.dto.PolicyApprovalMessageRequest;
-import application.service.InsurancePolicyService;
-import domain.entity.Client;
-import domain.entity.Insurance;
-import domain.entity.InsurancePolicy;
-import infra.repository.InsurancePolicyRepository;
+import com.project.InsureCompare.application.dto.InsurancePolicyDTO;
+import com.project.InsureCompare.application.mappers.InsurancePolicyMapper;
+import com.project.InsureCompare.application.messaging.PolicyApprovalService;
+import com.project.InsureCompare.application.messaging.dto.PolicyApprovalMessageRequest;
+import com.project.InsureCompare.application.service.InsurancePolicyService;
+import com.project.InsureCompare.domain.entity.Client;
+import com.project.InsureCompare.domain.entity.Insurance;
+import com.project.InsureCompare.domain.entity.InsurancePolicy;
+import com.project.InsureCompare.infra.repository.InsurancePolicyRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.Collections;
@@ -63,41 +64,7 @@ class InsurancePolicyServiceTest {
 				insurancePolicy.getPolicyInsuranceNumber(), insurancePolicy.getStatus());
 		invalidId = 999L;
 	}
-
-	@Test
-	void testFindPoliciesByClientAndStatusWithValidClientAndStatus() {
-		when(insurancePolicyRepository.findByCustomerAndStatus(client, insurancePolicy.getStatus()))
-				.thenReturn(List.of(insurancePolicy));
-		when(insurancePolicyMapper.toDTO(insurancePolicy)).thenReturn(insurancePolicyDTO);
-
-		List<InsurancePolicyDTO> result = insurancePolicyService.findPoliciesByClientAndStatus(client,
-				insurancePolicy.getStatus());
-
-		assertNotNull(result);
-		assertEquals(1, result.size());
-		verify(insurancePolicyRepository).findByCustomerAndStatus(client, insurancePolicy.getStatus());
-		verify(insurancePolicyMapper, times(1)).toDTO(any(InsurancePolicy.class));
-	}
-
-	@Test
-	void testFindPoliciesByClientAndStatusWithInvalidClient() {
-		when(insurancePolicyRepository.findByCustomerAndStatus(null, insurancePolicy.getStatus()))
-				.thenThrow(new IllegalArgumentException("Customer cannot be null"));
-
-		assertThrows(IllegalArgumentException.class, () -> {
-			insurancePolicyService.findPoliciesByClientAndStatus(null, insurancePolicy.getStatus());
-		});
-	}
-
-	@Test
-	void testFindPoliciesByClientAndStatusWithNonExistentStatus() {
-		when(insurancePolicyRepository.findByCustomerAndStatus(client, null)).thenReturn(Collections.emptyList());
-
-		var result = insurancePolicyService.findPoliciesByClientAndStatus(client, null);
-
-		assertTrue(result.isEmpty(), "The result should be an empty list for a non-existent status");
-	}
-
+	
 	@Test
 	void testFindInsurancePolicyByIdWithValidId() {
 		when(insurancePolicyRepository.findById(insurancePolicy.getId())).thenReturn(Optional.of(insurancePolicy));

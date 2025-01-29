@@ -1,10 +1,30 @@
+version: '3.8'
 services:
+  rabbitmq:
+    image: 'rabbitmq:management'
+    container_name: 'rabbitmq'
+    ports:
+      - '5672:5672' # Porta para comunicação com aplicações
+      - '15672:15672' # Porta para acesso à interface de gerenciamento
+    environment:
+      RABBITMQ_DEFAULT_USER: 'guest' # Substitua se quiser configurar outro usuário
+      RABBITMQ_DEFAULT_PASS: 'guest' # Substitua para alterar a senha
+    networks:
+      - app_network
+
   mysql:
     image: 'mysql:latest'
+    container_name: 'mysql'
     environment:
       - 'MYSQL_DATABASE=mydatabase'
+      - 'MYSQL_USER=myuser'
       - 'MYSQL_PASSWORD=secret'
       - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
     ports:
-      - '3306'
+      - '3306:3306'
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
