@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/Payment")
+@RequestMapping("/payments")
 public class PaymentController {
 
 	@Autowired
 	private PaymentService paymentService;
 
-	@PostMapping("/payments")
+	@PostMapping
 	public ResponseEntity<PaymentDTO> savePayment(@RequestBody PaymentDTO paymentDTO) {
 		try {
 			Payment savedPayment = paymentService.savePayment(paymentDTO);
@@ -34,7 +34,7 @@ public class PaymentController {
 		}
 	}
 
-	@GetMapping("/payments/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<PaymentDTO> findPaymentById(@PathVariable Long id) {
 		try {
 			PaymentDTO paymentDTO = paymentService.getPaymentById(id);
@@ -46,7 +46,7 @@ public class PaymentController {
 		}
 	}
 
-	@DeleteMapping("/payments/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deletePaymentById(@PathVariable Long id) {
 		try {
 			paymentService.deletePaymentById(id);

@@ -23,7 +23,7 @@ import com.project.InsureCompare.domain.entity.Insurance;
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
-@RequestMapping("/InsuranceController")
+@RequestMapping("/insurances")
 public class InsuranceController {
 
 	@Autowired
@@ -39,7 +39,7 @@ public class InsuranceController {
 		}
 	}
 
-	@GetMapping("/insurances/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<InsuranceDTO> findInsuranceById(@PathVariable Long id) {
 		try {
 			Optional<InsuranceDTO> insuranceDTO = Optional.ofNullable(insuranceService.getInsuranceById(id));

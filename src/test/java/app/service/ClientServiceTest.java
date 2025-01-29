@@ -121,13 +121,12 @@ class ClientServiceTest {
 		List<Client> testClientAll = new ArrayList<Client>();
 		testClientAll.add(client);
 
-		when(clientMapper.toDTO(client)).thenReturn(clientDTO);
 		when(repository.findAll()).thenReturn(testClientAll);
 
-		List<ClientDTO> result = service.findAllClients();
+		List<Client> result = service.findAllClients();
 
 		assertEquals(1, result.size());
-		assertEquals("test", result.get(0).name());
+		assertEquals("test", result.get(0).getName());
 
 		verify(repository, times(1)).findAll();
 	}
@@ -136,7 +135,7 @@ class ClientServiceTest {
 	void testFindAllClientsWhenNoClientsExist() {
 		when(repository.findAll()).thenReturn(new ArrayList<>());
 
-		List<ClientDTO> result = service.findAllClients();
+		List<Client> result = service.findAllClients();
 
 		assertTrue(result.isEmpty());
 		assertEquals(0, result.size());

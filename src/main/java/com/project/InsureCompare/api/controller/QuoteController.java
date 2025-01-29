@@ -21,7 +21,7 @@ import com.project.InsureCompare.application.service.QuoteService;
 import com.project.InsureCompare.domain.entity.Quote;
 
 @RestController
-@RequestMapping("/Quote")
+@RequestMapping("/quotes")
 public class QuoteController {
 
 	@Autowired
@@ -38,7 +38,7 @@ public class QuoteController {
 		}
 	}
 
-	@PutMapping("/quotes/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<QuoteDTO> updateQuote(@PathVariable Long id, @RequestBody Map<String, Object> updateRequest) {
 		try {
 			QuoteDTO updatedQuote = quoteService.updateQuote(id, updateRequest);
@@ -50,7 +50,7 @@ public class QuoteController {
 		}
 	}
 
-	@DeleteMapping("/quotes/delete/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteQuoteById(@PathVariable Long id) {
 		try {
 			quoteService.deleteQuoteById(id);
@@ -62,7 +62,7 @@ public class QuoteController {
 		}
 	}
 
-	@GetMapping("/quotes")
+	@GetMapping
 	public ResponseEntity<List<QuoteDTO>> findAllQuotes() {
 		try {
 			List<QuoteDTO> quotes = quoteService.findAllQuotes();
@@ -72,7 +72,7 @@ public class QuoteController {
 		}
 	}
 
-	@GetMapping("/quotes/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<QuoteDTO> findQuoteById(@PathVariable Long id) {
 		try {
 			Optional<QuoteDTO> quotesDTO = quoteService.findByIdQuotes(id);

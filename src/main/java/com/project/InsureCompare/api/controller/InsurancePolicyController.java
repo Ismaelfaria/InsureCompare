@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/InsurancePolicy")
+@RequestMapping("/insurance-policies")
 public class InsurancePolicyController {
 
 	@Autowired
@@ -33,7 +33,7 @@ public class InsurancePolicyController {
 	@Autowired
 	private ClientService clientService;
 
-	@PostMapping("/policies")
+	@PostMapping
 	public ResponseEntity<InsurancePolicyDTO> savePolicy(@RequestBody InsurancePolicyDTO policyDTO) {
 		try {
 			InsurancePolicy savedPolicy = insurancePolicyService.savePolicy(policyDTO);
@@ -45,7 +45,7 @@ public class InsurancePolicyController {
 		}
 	}
 
-	@GetMapping("/policies/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<InsurancePolicyDTO> findInsurancePolicyById(@PathVariable Long id) {
 		try {
 			Optional<InsurancePolicyDTO> policyDTO = insurancePolicyService.findInsurancePolicyById(id);
@@ -55,7 +55,7 @@ public class InsurancePolicyController {
 		}
 	}
 
-	@GetMapping("/policies")
+	@GetMapping
 	public ResponseEntity<List<InsurancePolicyDTO>> findAllInsurancePolicies() {
 		try {
 			List<InsurancePolicyDTO> policies = insurancePolicyService.findAllInsurancePolicy();
@@ -80,7 +80,7 @@ public class InsurancePolicyController {
         return ResponseEntity.ok(policies);
 }
 
-	@PutMapping("/policies/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<InsurancePolicyDTO> updateInsurancePolicy(@PathVariable Long id,
 			@RequestBody Map<String, Object> updateRequest) {
 		try {
@@ -93,7 +93,7 @@ public class InsurancePolicyController {
 		}
 	}
 
-	@DeleteMapping("/policies/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deletePolicyById(@PathVariable Long id) {
 		try {
 			insurancePolicyService.deletePolicyById(id);

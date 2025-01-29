@@ -26,14 +26,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @RestController
-@RequestMapping("/ClientController")
+@RequestMapping("/clients")
 public class ClientController {
 
 	@Autowired
 	private ClientService clientService;
 
 	@PostMapping
-	public ResponseEntity<ClientDTO> saveClient(ClientDTO clientDTO) {
+	public ResponseEntity<ClientDTO> saveClient(@RequestBody ClientDTO clientDTO) {
 		try {
 			Client savedClient = clientService.saveClient(clientDTO);
 			ClientDTO savedClientDTO = clientService.findClientById(savedClient.getId()).orElse(null);
@@ -43,8 +43,8 @@ public class ClientController {
 		}
 	}
 
-	@GetMapping("/clients/{id}")
-	public ResponseEntity<ClientDTO> findClientById(Long id) {
+	@GetMapping("{id}")
+	public ResponseEntity<ClientDTO> findClientById(@PathVariable Long id) {
 		try {
 			Optional<ClientDTO> clientDTO = clientService.findClientById(id);
 			return clientDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -54,9 +54,9 @@ public class ClientController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<ClientDTO>> findAllClients() {
+	public ResponseEntity<List<Client>> findAllClients() {
 		try {
-			List<ClientDTO> clients = clientService.findAllClients();
+			List<Client> clients = clientService.findAllClients();
 			return ResponseEntity.ok(clients);
 		} catch (Exception ex) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -99,6 +99,4 @@ public class ClientController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-
-	
 }

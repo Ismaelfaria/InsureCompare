@@ -10,7 +10,6 @@ public class ClientMapper {
 		
 	public Client toEntity(ClientDTO dto) {
         Client client = new Client(
-        null,
         dto.name(),
         dto.email(),
         dto.phone(),

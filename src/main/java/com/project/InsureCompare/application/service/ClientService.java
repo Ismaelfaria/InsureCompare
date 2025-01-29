@@ -39,9 +39,9 @@ public class ClientService {
 		return clientRepository.findClientesOrderedByTotalSeguroValue(pageable).map(clientMapper::toDTO);
 	}
 
-	public List<ClientDTO> findAllClients() {
+	public List<Client> findAllClients() {
 		List<Client> allClients = clientRepository.findAll();
-		return allClients.stream().map(clientMapper::toDTO).toList();
+		return allClients;
 	}
 
 	public ClientDTO updateClient(Long id, Map<String, Object> updateRequest) {
