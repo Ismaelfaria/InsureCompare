@@ -66,7 +66,7 @@ public class InsurancePolicyController {
 	}
 	
 	@GetMapping("/client/{clientId}/status/{status}")
-    public ResponseEntity<List<InsurancePolicyDTO>> getPoliciesByClientAndStatus(
+    public ResponseEntity<List<InsurancePolicyDTO>> findPoliciesByClientAndStatus(
             @PathVariable Long clientId,
             @PathVariable String status) {
         
