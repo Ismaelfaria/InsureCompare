@@ -60,9 +60,8 @@ public class InsurancePolicyService {
 
 	private PolicyApprovalMessageRequest createApprovalRequest(InsurancePolicy insurancePolicy) {
 		PolicyApprovalMessageRequest request = new PolicyApprovalMessageRequest();
-		request.setPolicyId(insurancePolicy.getId());
-		// TODO: Remover policyId, pois recebe null antes da persistência no BD.
-	    // Substituir por idClient e idInsurance para garantir que a requisição tenha os dados corretos.
+		request.setClientId(insurancePolicy.getClient().getId());
+		request.setInsuranceId(insurancePolicy.getInsurance().getId());
 		request.setPolicyHolderNumber(insurancePolicy.getPolicyInsuranceNumber());
 		request.setPolicyStatus(insurancePolicy.getStatus());
 

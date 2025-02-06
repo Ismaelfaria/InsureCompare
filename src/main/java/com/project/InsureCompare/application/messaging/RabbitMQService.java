@@ -22,17 +22,14 @@ public class RabbitMQService {
 
     @RabbitListener(queues = "${rabbitmq.request.queue}")
     public void receiveMessage(PolicyApprovalMessageRequest request) {
-    	 System.out.println("Mensagem recebida da fila: " + request.getPolicyId());
-
     	    PolicyApprovalMessageResponse response = new PolicyApprovalMessageResponse(
-    	        request.getPolicyId(),             
+    	        request.getClientId(),  
+    	        request.getInsuranceId(),
     	        request.getPolicyHolderNumber(),     
     	        request.getPolicyStatus(),         
     	        true                               
     	    );
 
     	    rabbitTemplate.convertAndSend(responseQueue, response);
-
-    	    System.out.println("Resposta enviada para a fila: " + response.getPolicyId());
     }
 }

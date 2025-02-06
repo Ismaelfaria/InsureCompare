@@ -2,7 +2,8 @@ package com.project.InsureCompare.application.messaging.dto;
 
 public class PolicyApprovalMessageRequest {
 
-	private long policyId;
+	private long clientId;
+	private long insuranceId;
 	private String policyHolderNumber;
 	private String policyStatus;
 
@@ -10,19 +11,29 @@ public class PolicyApprovalMessageRequest {
 		super();
 	}
 
-	public PolicyApprovalMessageRequest(long policyId, String policyHolderName, String policyStatus) {
+	public PolicyApprovalMessageRequest(long clientId, long insuranceId, String policyHolderNumber,
+			String policyStatus) {
 		super();
-		this.policyId = policyId;
-		this.policyHolderNumber = policyHolderName;
+		this.clientId = clientId;
+		this.insuranceId = insuranceId;
+		this.policyHolderNumber = policyHolderNumber;
 		this.policyStatus = policyStatus;
 	}
 
-	public long getPolicyId() {
-		return policyId;
+	public long getClientId() {
+		return clientId;
 	}
 
-	public void setPolicyId(long policyId) {
-		this.policyId = policyId;
+	public void setClientId(long clientId) {
+		this.clientId = clientId;
+	}
+
+	public long getInsuranceId() {
+		return insuranceId;
+	}
+
+	public void setInsuranceId(long insuranceId) {
+		this.insuranceId = insuranceId;
 	}
 
 	public String getPolicyHolderNumber() {
@@ -40,4 +51,5 @@ public class PolicyApprovalMessageRequest {
 	public void setPolicyStatus(String policyStatus) {
 		this.policyStatus = policyStatus;
 	}
+
 }

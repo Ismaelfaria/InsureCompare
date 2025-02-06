@@ -2,25 +2,40 @@ package com.project.InsureCompare.application.messaging.dto;
 
 public class PolicyApprovalMessageResponse {
 
-	private long policyId;
+	private long clientId;
+	private long insuranceId;
 	private String policyHolderName;
 	private String policyStatus;
 	private boolean approved;
 
-	public PolicyApprovalMessageResponse(long policyId, String policyHolderName, String policyStatus,
+	public PolicyApprovalMessageResponse() {
+		super();
+	}
+
+	public PolicyApprovalMessageResponse(long clientId, long insuranceId, String policyHolderName, String policyStatus,
 			boolean approved) {
-		this.policyId = policyId;
+		super();
+		this.clientId = clientId;
+		this.insuranceId = insuranceId;
 		this.policyHolderName = policyHolderName;
 		this.policyStatus = policyStatus;
 		this.approved = approved;
 	}
 
-	public long getPolicyId() {
-		return policyId;
+	public long getClientId() {
+		return clientId;
 	}
 
-	public void setPolicyId(long policyId) {
-		this.policyId = policyId;
+	public void setClientId(long clientId) {
+		this.clientId = clientId;
+	}
+
+	public long getInsuranceId() {
+		return insuranceId;
+	}
+
+	public void setInsuranceId(long insuranceId) {
+		this.insuranceId = insuranceId;
 	}
 
 	public String getPolicyHolderName() {
