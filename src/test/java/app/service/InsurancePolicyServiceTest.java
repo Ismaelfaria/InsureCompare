@@ -5,17 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.project.InsureCompare.application.dto.InsurancePolicyDTO;
 import com.project.InsureCompare.application.mappers.InsurancePolicyMapper;
 import com.project.InsureCompare.application.messaging.PolicyApprovalService;
-import com.project.InsureCompare.application.messaging.dto.PolicyApprovalMessageRequest;
-import com.project.InsureCompare.application.service.InsurancePolicyService;
+import com.project.InsureCompare.application.service.impl.InsurancePolicyServiceImpl;
 import com.project.InsureCompare.domain.entity.Client;
 import com.project.InsureCompare.domain.entity.Insurance;
 import com.project.InsureCompare.domain.entity.InsurancePolicy;
@@ -52,7 +49,7 @@ class InsurancePolicyServiceTest {
 	private ClientRepository clientRepository;
 
 	@InjectMocks
-	private InsurancePolicyService insurancePolicyService;
+	private InsurancePolicyServiceImpl insurancePolicyService;
 
 	static Client client;
 	static InsurancePolicy insurancePolicy;

@@ -1,4 +1,4 @@
-package com.project.InsureCompare.application.service;
+package com.project.InsureCompare.application.service.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.project.InsureCompare.application.dto.QuoteDTO;
 import com.project.InsureCompare.application.mappers.QuoteMapper;
+import com.project.InsureCompare.application.service.interfaces.QuoteService;
 import com.project.InsureCompare.domain.entity.Client;
 import com.project.InsureCompare.domain.entity.Insurance;
 import com.project.InsureCompare.domain.entity.Quote;
@@ -19,7 +20,7 @@ import com.project.InsureCompare.infra.repository.QuoteRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class QuoteService {
+public class QuoteServiceImpl implements QuoteService {
 
 	@Autowired
 	private QuoteRepository quoteRepository;
@@ -50,7 +51,7 @@ public class QuoteService {
 		return quoteMapper.toDTO(existingQuote);
 	}
 	
-	private void updateQuoteFields(Quote existingQuote, Map<String, Object> updateRequest) {
+	public void updateQuoteFields(Quote existingQuote, Map<String, Object> updateRequest) {
 		updateRequest.forEach((field, newValue) -> {
 			switch (field.toLowerCase()) {
 			case "quotedprice":

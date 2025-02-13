@@ -1,4 +1,4 @@
-package com.project.InsureCompare.application.service;
+package com.project.InsureCompare.application.service.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ import com.project.InsureCompare.application.dto.InsurancePolicyDTO;
 import com.project.InsureCompare.application.mappers.InsurancePolicyMapper;
 import com.project.InsureCompare.application.messaging.PolicyApprovalService;
 import com.project.InsureCompare.application.messaging.dto.PolicyApprovalMessageRequest;
+import com.project.InsureCompare.application.service.interfaces.InsurancePolicyService;
 import com.project.InsureCompare.domain.entity.Client;
 import com.project.InsureCompare.domain.entity.Insurance;
 import com.project.InsureCompare.domain.entity.InsurancePolicy;
@@ -20,7 +21,7 @@ import com.project.InsureCompare.infra.repository.InsurancePolicyRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class InsurancePolicyService {
+public class InsurancePolicyServiceImpl implements InsurancePolicyService {
 
 	@Autowired
 	private InsurancePolicyRepository insurancePolicyRepository;
@@ -58,7 +59,7 @@ public class InsurancePolicyService {
 		return insurancePolicyRepository.save(insurancePolicy);
 	}
 
-	private PolicyApprovalMessageRequest createApprovalRequest(InsurancePolicy insurancePolicy) {
+	public PolicyApprovalMessageRequest createApprovalRequest(InsurancePolicy insurancePolicy) {
 		PolicyApprovalMessageRequest request = new PolicyApprovalMessageRequest();
 		request.setClientId(insurancePolicy.getClient().getId());
 		request.setInsuranceId(insurancePolicy.getInsurance().getId());
@@ -80,7 +81,7 @@ public class InsurancePolicyService {
 		return insurancePolicyMapper.toDTO(insurancePolicyUpdate);
 	}
 
-	private void updateInsurancePolicyFields(InsurancePolicy existingInsurancePolicy,
+	public void updateInsurancePolicyFields(InsurancePolicy existingInsurancePolicy,
 			Map<String, Object> updateRequest) {
 		updateRequest.forEach((field, newValue) -> {
 			switch (field.toLowerCase()) {

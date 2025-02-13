@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.project.InsureCompare.application.dto.QuoteDTO;
 import com.project.InsureCompare.application.mappers.QuoteMapper;
-import com.project.InsureCompare.application.service.QuoteService;
+import com.project.InsureCompare.application.service.impl.QuoteServiceImpl;
 import com.project.InsureCompare.domain.entity.Client;
 import com.project.InsureCompare.domain.entity.Insurance;
 import com.project.InsureCompare.domain.entity.Quote;
@@ -48,7 +48,7 @@ class QuoteServiceTest {
 	private QuoteMapper quoteMapper;
 
 	@InjectMocks
-	private QuoteService quoteService;
+	private QuoteServiceImpl quoteService;
 
 	static Quote quote;
 	static QuoteDTO quoteDTO;

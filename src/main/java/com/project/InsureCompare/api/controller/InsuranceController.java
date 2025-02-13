@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.InsureCompare.application.dto.InsuranceDTO;
-import com.project.InsureCompare.application.service.InsuranceService;
+import com.project.InsureCompare.application.service.interfaces.InsuranceService;
 import com.project.InsureCompare.domain.entity.Insurance;
 
 import jakarta.persistence.EntityNotFoundException;

@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.InsureCompare.application.dto.ClientDTO;
 import com.project.InsureCompare.application.dto.InsurancePolicyDTO;
-import com.project.InsureCompare.application.service.ClientService;
-import com.project.InsureCompare.application.service.InsurancePolicyService;
+import com.project.InsureCompare.application.service.impl.InsurancePolicyServiceImpl;
+import com.project.InsureCompare.application.service.interfaces.ClientService;
 import com.project.InsureCompare.domain.entity.InsurancePolicy;
 
 import java.util.List;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class InsurancePolicyController {
 
 	@Autowired
-	private InsurancePolicyService insurancePolicyService;
+	private InsurancePolicyServiceImpl insurancePolicyService;
 	
 	@Autowired
 	private ClientService clientService;

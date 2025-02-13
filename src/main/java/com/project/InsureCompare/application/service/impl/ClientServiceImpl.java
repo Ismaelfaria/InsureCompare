@@ -1,4 +1,4 @@
-package com.project.InsureCompare.application.service;
+package com.project.InsureCompare.application.service.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.project.InsureCompare.application.dto.ClientDTO;
 import com.project.InsureCompare.application.mappers.ClientMapper;
+import com.project.InsureCompare.application.service.interfaces.ClientService;
 import com.project.InsureCompare.domain.entity.Client;
 import com.project.InsureCompare.infra.repository.ClientRepository;
 
@@ -17,7 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @Service
-public class ClientService {
+public class ClientServiceImpl implements ClientService{
 
 	@Autowired
 	private ClientRepository clientRepository;
@@ -55,7 +56,7 @@ public class ClientService {
 		return clientMapper.toDTO(updatedClient);
 	}
 
-	private void updateClientFields(Client existingClient, Map<String, Object> updateRequest) {
+	public void updateClientFields(Client existingClient, Map<String, Object> updateRequest) {
 		updateRequest.forEach((field, newValue) -> {
 			switch (field.toLowerCase()) {
 			case "name":
@@ -79,5 +80,4 @@ public class ClientService {
 	public void deleteClient(Long id) {
 		clientRepository.deleteById(id);
 	}
-
 }

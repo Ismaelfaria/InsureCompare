@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.InsureCompare.application.dto.QuoteDTO;
-import com.project.InsureCompare.application.service.QuoteService;
+import com.project.InsureCompare.application.service.interfaces.QuoteService;
 import com.project.InsureCompare.domain.entity.Quote;
 
 @RestController

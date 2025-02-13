@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.project.InsureCompare.application.dto.InsuranceDTO;
 import com.project.InsureCompare.application.mappers.InsuranceMapper;
-import com.project.InsureCompare.application.service.InsuranceService;
+import com.project.InsureCompare.application.service.impl.InsuranceServiceImpl;
 import com.project.InsureCompare.domain.entity.Insurance;
 import com.project.InsureCompare.infra.repository.InsuranceRepository;
 
@@ -37,7 +37,7 @@ class InsuranceServiceTest {
 	private InsuranceMapper insuranceMapper;
 
 	@InjectMocks
-	private InsuranceService insuranceService;
+	private InsuranceServiceImpl insuranceService;
 
 	static Insurance insurance;
 	static InsuranceDTO insuranceDTO;

@@ -1,4 +1,4 @@
-package com.project.InsureCompare.application.service;
+package com.project.InsureCompare.application.service.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -8,13 +8,14 @@ import org.springframework.stereotype.Service;
 
 import com.project.InsureCompare.application.dto.InsuranceDTO;
 import com.project.InsureCompare.application.mappers.InsuranceMapper;
+import com.project.InsureCompare.application.service.interfaces.InsuranceService;
 import com.project.InsureCompare.domain.entity.Insurance;
 import com.project.InsureCompare.infra.repository.InsuranceRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class InsuranceService {
+public class InsuranceServiceImpl implements InsuranceService {
 
 	@Autowired
 	private InsuranceRepository insuranceRepository;
@@ -48,7 +49,7 @@ public class InsuranceService {
 		return insuranceMapper.toDTO(insuranceUpdate);
 	}
 
-	private void updateInsuranceFields(Insurance existingInsurance, Map<String, Object> updateRequest) {
+	public void updateInsuranceFields(Insurance existingInsurance, Map<String, Object> updateRequest) {
 		updateRequest.forEach((field, newValue) -> {
 			switch (field.toLowerCase()) {
 			case "type":

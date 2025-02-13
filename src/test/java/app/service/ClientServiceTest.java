@@ -14,7 +14,7 @@ import org.springframework.data.domain.Sort;
 
 import com.project.InsureCompare.application.dto.ClientDTO;
 import com.project.InsureCompare.application.mappers.ClientMapper;
-import com.project.InsureCompare.application.service.ClientService;
+import com.project.InsureCompare.application.service.impl.ClientServiceImpl;
 import com.project.InsureCompare.domain.entity.Client;
 import com.project.InsureCompare.infra.repository.ClientRepository;
 
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 class ClientServiceTest {
 
 	@InjectMocks
-	ClientService service;
+	ClientServiceImpl service;
 
 	@Mock
 	ClientRepository repository;
