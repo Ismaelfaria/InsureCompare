@@ -42,7 +42,7 @@ public class InsuranceController {
 	@GetMapping("/{id}")
 	public ResponseEntity<InsuranceDTO> findInsuranceById(@PathVariable Long id) {
 		try {
-			Optional<InsuranceDTO> insuranceDTO = Optional.ofNullable(insuranceService.getInsuranceById(id));
+			Optional<InsuranceDTO> insuranceDTO = insuranceService.getInsuranceById(id);
 			return insuranceDTO.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -10,12 +10,10 @@ import org.springframework.stereotype.Service;
 import com.project.InsureCompare.application.dto.QuoteDTO;
 import com.project.InsureCompare.application.mappers.QuoteMapper;
 import com.project.InsureCompare.application.service.interfaces.QuoteService;
-import com.project.InsureCompare.domain.entity.Client;
-import com.project.InsureCompare.domain.entity.Insurance;
+import com.project.InsureCompare.application.service.validation.QuoteValidator;
 import com.project.InsureCompare.domain.entity.Quote;
-import com.project.InsureCompare.infra.repository.ClientRepository;
-import com.project.InsureCompare.infra.repository.InsuranceRepository;
 import com.project.InsureCompare.infra.repository.QuoteRepository;
+import com.project.InsureCompare.util.EntityUpdater;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -26,13 +24,13 @@ public class QuoteServiceImpl implements QuoteService {
 	private QuoteRepository quoteRepository;
 
 	@Autowired
-	private ClientRepository clientRepository;
-
-	@Autowired
-	private InsuranceRepository insuranceRepository;
-
-	@Autowired
 	private QuoteMapper quoteMapper;
+
+	@Autowired
+	private EntityUpdater entityUpdater;
+
+	@Autowired
+	private QuoteValidator quoteValidator;
 
 	public Quote saveQuote(QuoteDTO quoteDTO) {
 
@@ -42,35 +40,15 @@ public class QuoteServiceImpl implements QuoteService {
 	}
 
 	public QuoteDTO updateQuote(Long id, Map<String, Object> updateRequest) {
-		Quote existingQuote = quoteRepository.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Quote not found with id: " + id));
+		Optional<Quote> existingQuoteOptional = quoteRepository.findById(id);
 
-		updateQuoteFields(existingQuote, updateRequest);
+		Quote existingQuote = existingQuoteOptional.get();
+		entityUpdater.updateEntityFields(existingQuote, updateRequest);
 
-		quoteRepository.save(existingQuote);
-		return quoteMapper.toDTO(existingQuote);
-	}
-	
-	public void updateQuoteFields(Quote existingQuote, Map<String, Object> updateRequest) {
-		updateRequest.forEach((field, newValue) -> {
-			switch (field.toLowerCase()) {
-			case "quotedprice":
-				existingQuote.setQuotedPrice((Double) newValue);
-				break;
-			case "client":
-				Client client = clientRepository.findById((Long) newValue)
-						.orElseThrow(() -> new EntityNotFoundException("Client not found with id: " + newValue));
-				existingQuote.setClient(client);
-				break;
-			case "insurance":
-				Insurance insurance = insuranceRepository.findById((Long) newValue)
-						.orElseThrow(() -> new EntityNotFoundException("Insurance not found with id: " + newValue));
-				existingQuote.setInsurance(insurance);
-				break;
-			default:
-				throw new IllegalArgumentException("Invalid field to update: " + field);
-			}
-		});
+		quoteValidator.validateAndUpdateRelationships(existingQuote, updateRequest);
+
+		Quote updatedQuote = quoteRepository.save(existingQuote);
+		return quoteMapper.toDTO(updatedQuote);
 	}
 
 	public void deleteQuoteById(Long id) {
@@ -85,6 +63,11 @@ public class QuoteServiceImpl implements QuoteService {
 	}
 
 	public Optional<QuoteDTO> findByIdQuotes(Long id) {
-		return quoteRepository.findById(id).map(quoteMapper::toDTO);
+		Optional<Quote> existingQuoteOptional = quoteRepository.findById(id);
+
+		if (existingQuoteOptional.isEmpty()) {
+			throw new EntityNotFoundException("Client not found with id: " + id);
+		}
+		return existingQuoteOptional.map(quoteMapper::toDTO);
 	}
 }

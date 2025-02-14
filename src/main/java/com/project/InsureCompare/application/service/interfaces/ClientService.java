@@ -17,7 +17,6 @@ public interface ClientService {
 	Page<ClientDTO> getClientsOrderedByInsuranceValue(Pageable pageable);
 	List<Client> findAllClients();
 	ClientDTO updateClient(Long id, Map<String, Object> updateRequest);
-	void updateClientFields(Client existingClient, Map<String, Object> updateRequest);
 	void deleteClient(Long id);
 	
 }

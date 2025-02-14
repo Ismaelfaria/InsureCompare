@@ -16,8 +16,5 @@ public interface InsurancePolicyService {
 	InsurancePolicy savePolicy(InsurancePolicyDTO policyDTO);
 	PolicyApprovalMessageRequest createApprovalRequest(InsurancePolicy insurancePolicy);
 	InsurancePolicyDTO updateInsurancePolicy(Long id, Map<String, Object> updateRequest);
-	void updateInsurancePolicyFields(InsurancePolicy existingInsurancePolicy,
-			Map<String, Object> updateRequest);
 	void deletePolicyById(Long id);
-	
 }

@@ -11,7 +11,6 @@ public interface QuoteService {
 
 	Quote saveQuote(QuoteDTO quoteDTO);
 	QuoteDTO updateQuote(Long id, Map<String, Object> updateRequest);
-	void updateQuoteFields(Quote existingQuote, Map<String, Object> updateRequest);
 	void deleteQuoteById(Long id);
 	List<QuoteDTO> findAllQuotes();
 	Optional<QuoteDTO> findByIdQuotes(Long id);

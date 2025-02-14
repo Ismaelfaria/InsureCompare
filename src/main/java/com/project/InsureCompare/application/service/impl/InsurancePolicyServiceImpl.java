@@ -13,10 +13,10 @@ import com.project.InsureCompare.application.messaging.PolicyApprovalService;
 import com.project.InsureCompare.application.messaging.dto.PolicyApprovalMessageRequest;
 import com.project.InsureCompare.application.service.interfaces.InsurancePolicyService;
 import com.project.InsureCompare.domain.entity.Client;
-import com.project.InsureCompare.domain.entity.Insurance;
 import com.project.InsureCompare.domain.entity.InsurancePolicy;
 import com.project.InsureCompare.infra.repository.ClientRepository;
 import com.project.InsureCompare.infra.repository.InsurancePolicyRepository;
+import com.project.InsureCompare.util.EntityUpdater;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -35,6 +35,9 @@ public class InsurancePolicyServiceImpl implements InsurancePolicyService {
 	@Autowired
 	private InsurancePolicyMapper insurancePolicyMapper;
 
+	@Autowired
+	private EntityUpdater entityUpdater;
+
 	public List<InsurancePolicyDTO> findPoliciesByClientAndStatus(Long clientId, String status) {
 		Optional<Client> clientByPolicies = clientRepository.findById(clientId);
 
@@ -43,7 +46,13 @@ public class InsurancePolicyServiceImpl implements InsurancePolicyService {
 	}
 
 	public Optional<InsurancePolicyDTO> findInsurancePolicyById(Long id) {
-		return insurancePolicyRepository.findById(id).map(insurancePolicyMapper::toDTO);
+		Optional<InsurancePolicy> insurancePolicyOptional = insurancePolicyRepository.findById(id);
+
+		if (insurancePolicyOptional.isEmpty()) {
+			throw new EntityNotFoundException("Insurance Policy not found with id: " + id);
+		}
+
+		return insurancePolicyOptional.map(insurancePolicyMapper::toDTO);
 	}
 
 	public List<InsurancePolicyDTO> findAllInsurancePolicy() {
@@ -70,37 +79,13 @@ public class InsurancePolicyServiceImpl implements InsurancePolicyService {
 	}
 
 	public InsurancePolicyDTO updateInsurancePolicy(Long id, Map<String, Object> updateRequest) {
+		Optional<InsurancePolicy> existingInsurancePolicyOption = insurancePolicyRepository.findById(id);
 
-		InsurancePolicy existingInsurancePolicy = insurancePolicyRepository.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Insurance policy not found with id: " + id));
-
-		updateInsurancePolicyFields(existingInsurancePolicy, updateRequest);
-
+		InsurancePolicy existingInsurancePolicy = existingInsurancePolicyOption.get();
+		entityUpdater.updateEntityFields(existingInsurancePolicy, updateRequest);
 		InsurancePolicy insurancePolicyUpdate = insurancePolicyRepository.save(existingInsurancePolicy);
 
 		return insurancePolicyMapper.toDTO(insurancePolicyUpdate);
-	}
-
-	public void updateInsurancePolicyFields(InsurancePolicy existingInsurancePolicy,
-			Map<String, Object> updateRequest) {
-		updateRequest.forEach((field, newValue) -> {
-			switch (field.toLowerCase()) {
-			case "status":
-				existingInsurancePolicy.setStatus((String) newValue);
-				break;
-			case "policyNumber":
-				existingInsurancePolicy.setPolicyInsuranceNumber((String) newValue);
-				break;
-			case "insurance":
-				existingInsurancePolicy.setInsurance((Insurance) newValue);
-				break;
-			case "client":
-				existingInsurancePolicy.setClient((Client) newValue);
-				break;
-			default:
-				throw new IllegalArgumentException("Invalid field to update: " + field);
-			}
-		});
 	}
 
 	public void deletePolicyById(Long id) {
