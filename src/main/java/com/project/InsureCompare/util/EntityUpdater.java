@@ -12,11 +12,10 @@ public class EntityUpdater {
                 Field field = entity.getClass().getDeclaredField(fieldName);
                 field.setAccessible(true);
                 field.set(entity, newValue);
-            } catch (NoSuchFieldException e) {
-                throw new IllegalArgumentException("Invalid field: " + fieldName);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to update field: " + fieldName, e);
+            } catch (Exception e) { 
+            	e.printStackTrace();
             }
+
         });
     }
 }

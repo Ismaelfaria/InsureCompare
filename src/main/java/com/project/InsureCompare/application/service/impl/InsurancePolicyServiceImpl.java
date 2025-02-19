@@ -11,6 +11,7 @@ import com.project.InsureCompare.application.dto.InsurancePolicyDTO;
 import com.project.InsureCompare.application.mappers.InsurancePolicyMapper;
 import com.project.InsureCompare.application.messaging.PolicyApprovalService;
 import com.project.InsureCompare.application.messaging.dto.PolicyApprovalMessageRequest;
+import com.project.InsureCompare.application.messaging.factory.PolicyApprovalRequestFactory;
 import com.project.InsureCompare.application.service.interfaces.InsurancePolicyService;
 import com.project.InsureCompare.domain.entity.Client;
 import com.project.InsureCompare.domain.entity.InsurancePolicy;
@@ -37,6 +38,9 @@ public class InsurancePolicyServiceImpl implements InsurancePolicyService {
 
 	@Autowired
 	private EntityUpdater entityUpdater;
+	
+	@Autowired
+	private PolicyApprovalRequestFactory policyApprovalRequestFactory;
 
 	public List<InsurancePolicyDTO> findPoliciesByClientAndStatus(Long clientId, String status) {
 		Optional<Client> clientByPolicies = clientRepository.findById(clientId);
@@ -61,21 +65,11 @@ public class InsurancePolicyServiceImpl implements InsurancePolicyService {
 
 	public InsurancePolicy savePolicy(InsurancePolicyDTO policyDTO) {
 		InsurancePolicy insurancePolicy = insurancePolicyMapper.toEntity(policyDTO);
-		PolicyApprovalMessageRequest request = createApprovalRequest(insurancePolicy);
+		PolicyApprovalMessageRequest request = policyApprovalRequestFactory.createRequest(insurancePolicy);
 
 		policyApprovalService.sendApprovalRequest(request);
 
 		return insurancePolicyRepository.save(insurancePolicy);
-	}
-
-	public PolicyApprovalMessageRequest createApprovalRequest(InsurancePolicy insurancePolicy) {
-		PolicyApprovalMessageRequest request = new PolicyApprovalMessageRequest();
-		request.setClientId(insurancePolicy.getClient().getId());
-		request.setInsuranceId(insurancePolicy.getInsurance().getId());
-		request.setPolicyHolderNumber(insurancePolicy.getPolicyInsuranceNumber());
-		request.setPolicyStatus(insurancePolicy.getStatus());
-
-		return request;
 	}
 
 	public InsurancePolicyDTO updateInsurancePolicy(Long id, Map<String, Object> updateRequest) {
